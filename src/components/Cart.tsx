@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { CartItem } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,24 +23,43 @@ export const Cart: React.FC<CartProps> = ({
     0
   );
 
+  useEffect(() => {
+    // When cart is first loaded
+    const timer = setTimeout(() => {
+      if (items.length === 0) {
+        voiceAssistant.speakCartEmpty();
+      }
+    }, 2000); // Slight delay after page load
+    
+    return () => clearTimeout(timer);
+  }, []);
+
   const handleQuantityChange = (itemId: string, newQuantity: number) => {
+    // First stop any current speech
+    voiceAssistant.stopSpeaking();
+    
     onUpdateQuantity(itemId, newQuantity);
     const item = items.find((i) => i.product.id === itemId);
     if (item) {
-      voiceAssistant.speak(
-        `Updated ${item.product.name} quantity to ${newQuantity}. Your cart total is now $${total.toFixed(2)}.`
-      );
+      // Voice assistant will be called with the calculated total in the Index page
     }
   };
 
   const handleRemoveItem = (itemId: string) => {
+    // First stop any current speech
+    voiceAssistant.stopSpeaking();
+    
     const item = items.find((i) => i.product.id === itemId);
     onRemoveItem(itemId);
-    if (item) {
-      voiceAssistant.speak(
-        `Removed ${item.product.name} from your cart. Your cart total is now $${total.toFixed(2)}.`
-      );
-    }
+    // Voice assistant will be called with the calculated total in the Index page
+  };
+
+  const handleCheckout = () => {
+    // First stop any current speech
+    voiceAssistant.stopSpeaking();
+    
+    onCheckout();
+    // Voice assistant will handle checkout speech in the Index page
   };
 
   return (
@@ -50,54 +69,60 @@ export const Cart: React.FC<CartProps> = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {items.map((item) => (
-            <div
-              key={item.product.id}
-              className="flex justify-between items-center p-2 border-b"
-            >
-              <div>
-                <h4 className="font-medium">{item.product.name}</h4>
-                <p className="text-sm text-gray-600">
-                  ${item.product.price.toFixed(2)} each
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    handleQuantityChange(item.product.id, item.quantity - 1)
-                  }
-                  disabled={item.quantity <= 1}
-                >
-                  -
-                </Button>
-                <span className="w-8 text-center">{item.quantity}</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    handleQuantityChange(item.product.id, item.quantity + 1)
-                  }
-                >
-                  +
-                </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => handleRemoveItem(item.product.id)}
-                >
-                  ×
-                </Button>
-              </div>
+          {items.length === 0 ? (
+            <div className="text-center text-gray-500 py-4">
+              Your cart is empty
             </div>
-          ))}
+          ) : (
+            items.map((item) => (
+              <div
+                key={item.product.id}
+                className="flex justify-between items-center p-2 border-b"
+              >
+                <div>
+                  <h4 className="font-medium">{item.product.name}</h4>
+                  <p className="text-sm text-gray-600">
+                    ${item.product.price.toFixed(2)} each
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      handleQuantityChange(item.product.id, item.quantity - 1)
+                    }
+                    disabled={item.quantity <= 1}
+                  >
+                    -
+                  </Button>
+                  <span className="w-8 text-center">{item.quantity}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      handleQuantityChange(item.product.id, item.quantity + 1)
+                    }
+                  >
+                    +
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleRemoveItem(item.product.id)}
+                  >
+                    ×
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
         </div>
         <div className="mt-4 text-right">
           <p className="text-lg font-semibold">Total: ${total.toFixed(2)}</p>
           <Button
             className="mt-4 w-full bg-green-600 hover:bg-green-700"
-            onClick={onCheckout}
+            onClick={handleCheckout}
             disabled={items.length === 0}
           >
             Checkout

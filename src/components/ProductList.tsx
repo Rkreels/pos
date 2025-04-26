@@ -13,8 +13,19 @@ interface ProductListProps {
 export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart }) => {
   const handleAddToCart = (product: Product) => {
     onAddToCart(product);
-    voiceAssistant.speak(`Added ${product.name} to your cart. You can add more items or proceed to checkout.`);
+    // Voice assistant will be called with the calculated total in the Index page
   };
+
+  React.useEffect(() => {
+    // Provide an overview of the products page when it loads
+    const timer = setTimeout(() => {
+      voiceAssistant.speak(
+        "Here are the available products. Browse through the items and click 'Add to Cart' for products you'd like to purchase."
+      );
+    }, 1000); // Slight delay to ensure page is rendered
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
