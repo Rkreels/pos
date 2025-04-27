@@ -16,10 +16,8 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
   
-  // Extract unique categories
   const categories = [...new Set(products.map(product => product.category))].filter(Boolean);
   
-  // Filter products based on search term and category
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           product.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -29,16 +27,17 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
 
   const handleAddToCart = (product: Product) => {
     onAddToCart(product);
-    // Voice assistant will be called with the calculated total in the Index page
+    voiceAssistant.speak(
+      "Here are the available products. You can search for items using the search bar or filter by category. Browse through the items and click 'Add to Cart' for products you'd like to purchase."
+    );
   };
 
   React.useEffect(() => {
-    // Provide an overview of the products page when it loads
     const timer = setTimeout(() => {
       voiceAssistant.speak(
         "Here are the available products. You can search for items using the search bar or filter by category. Browse through the items and click 'Add to Cart' for products you'd like to purchase."
       );
-    }, 1000); // Slight delay to ensure page is rendered
+    }, 1000);
     
     return () => clearTimeout(timer);
   }, []);
@@ -76,19 +75,34 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
           No products found matching your search
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
           {filteredProducts.map((product) => (
             <Card key={product.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-2">
                 <div className="flex flex-col h-full">
+                  <div className="aspect-square bg-gray-100 rounded-md mb-2 overflow-hidden">
+                    {product.image ? (
+                      <img 
+                        src={product.image} 
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <Image className="h-8 w-8" />
+                      </div>
+                    )}
+                  </div>
                   <h3 className="font-semibold text-sm truncate" title={product.name}>{product.name}</h3>
-                  <p className="text-xs text-gray-600 line-clamp-1" title={product.description}>{product.description}</p>
+                  <p className="text-xs text-gray-600 line-clamp-1" title={product.description}>
+                    {product.description}
+                  </p>
                   <div className="mt-auto pt-2">
                     <div className="flex items-center justify-between gap-1">
                       <p className="text-sm font-semibold">${product.price.toFixed(2)}</p>
                       <Button 
                         onClick={() => handleAddToCart(product)}
-                        className="h-7 px-2 bg-indigo-600 hover:bg-indigo-700"
+                        className="h-7 px-2"
                         size="sm"
                         disabled={product.stockQuantity !== undefined && product.stockQuantity <= 0}
                       >
