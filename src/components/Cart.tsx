@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { CartItem } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -30,8 +31,11 @@ export const Cart: React.FC<CartProps> = ({
   });
   const [paymentMethod, setPaymentMethod] = useState('cash');
   const [orderNotes, setOrderNotes] = useState('');
-  const [discount, setDiscount] = useState({
-    type: 'percentage' as const,
+  const [discount, setDiscount] = useState<{
+    type: 'percentage' | 'fixed';
+    value: number;
+  }>({
+    type: 'percentage',
     value: 0
   });
 

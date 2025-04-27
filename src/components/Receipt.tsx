@@ -43,14 +43,16 @@ export const Receipt: React.FC<ReceiptProps> = ({
         <html>
           <head>
             <style>
-              body { font-family: 'Courier New', monospace; font-size: 12px; width: 300px; }
+              body { font-family: 'Courier New', monospace; font-size: 12px; width: 300px; margin: 0; padding: 10px; }
               .header { text-align: center; margin-bottom: 10px; }
               .customer-info { margin: 10px 0; }
               .item { margin: 5px 0; }
               .total { margin-top: 10px; border-top: 1px dashed #000; padding-top: 5px; }
               .notes { margin-top: 10px; font-style: italic; }
+              .dashed-line { border-top: 1px dashed #000; margin: 5px 0; }
               @media print {
                 body { width: 80mm; } /* Standard thermal paper width */
+                @page { margin: 0; }
               }
             </style>
           </head>
@@ -85,9 +87,10 @@ export const Receipt: React.FC<ReceiptProps> = ({
         <div className="header">
           <h2 className="text-xl font-bold">SALES RECEIPT</h2>
           <p className="text-sm text-gray-600">{new Date().toLocaleString()}</p>
+          <div className="dashed-line"></div>
         </div>
         
-        {customerInfo && (
+        {customerInfo && customerInfo.name && (
           <div className="customer-info text-sm">
             <p><strong>Customer:</strong> {customerInfo.name}</p>
             {customerInfo.phone && <p><strong>Phone:</strong> {customerInfo.phone}</p>}
@@ -95,18 +98,24 @@ export const Receipt: React.FC<ReceiptProps> = ({
             {customerInfo.membership && (
               <p><strong>Membership:</strong> {customerInfo.membership}</p>
             )}
+            <div className="dashed-line"></div>
           </div>
         )}
 
         <div className="items space-y-1">
+          <p className="text-sm font-bold">ITEMS:</p>
           {items.map((item, index) => (
             <div key={index} className="item text-sm">
               <div className="flex justify-between">
                 <span>{item.product.name} x {item.quantity}</span>
                 <span>${(item.product.price * item.quantity).toFixed(2)}</span>
               </div>
+              <p className="text-xs text-gray-500">
+                SKU: {item.product.sku || 'N/A'} | ${item.product.price.toFixed(2)} each
+              </p>
             </div>
           ))}
+          <div className="dashed-line"></div>
         </div>
 
         <div className="total space-y-1 text-sm">
@@ -115,7 +124,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
             <span>${total.toFixed(2)}</span>
           </div>
           
-          {discount && (
+          {discount && discount.value > 0 && (
             <div className="flex justify-between text-green-600">
               <span>Discount ({discount.type === 'percentage' ? `${discount.value}%` : 'Fixed'}):</span>
               <span>-${calculatedDiscount.toFixed(2)}</span>
@@ -126,6 +135,8 @@ export const Receipt: React.FC<ReceiptProps> = ({
             <span>Tax (10%):</span>
             <span>${(finalTotal * 0.1).toFixed(2)}</span>
           </div>
+          
+          <div className="dashed-line"></div>
           
           <div className="flex justify-between font-bold">
             <span>Total:</span>
@@ -142,12 +153,14 @@ export const Receipt: React.FC<ReceiptProps> = ({
 
         {orderNotes && (
           <div className="notes mt-4 text-sm">
+            <div className="dashed-line"></div>
             <strong>Notes:</strong>
             <p>{orderNotes}</p>
           </div>
         )}
 
         <div className="footer text-center mt-4 text-sm">
+          <div className="dashed-line"></div>
           Thank you for your purchase!
         </div>
       </div>

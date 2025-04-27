@@ -1,10 +1,11 @@
+
 import React, { useState } from 'react';
 import { Product } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { Input } from '@/components/ui/input';
-import { Search, Tag, ShoppingCart } from 'lucide-react';
+import { Search, Tag, ShoppingCart, Image as ImageIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface ProductListProps {
@@ -89,7 +90,7 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <Image className="h-8 w-8" />
+                        <ImageIcon className="h-8 w-8" />
                       </div>
                     )}
                   </div>
