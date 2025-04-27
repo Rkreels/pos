@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Product } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
@@ -77,35 +76,31 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
           No products found matching your search
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
           {filteredProducts.map((product) => (
             <Card key={product.id} className="hover:shadow-lg transition-shadow">
-              <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-semibold text-lg">{product.name}</h3>
-                  {product.category && (
-                    <Badge variant="outline" className="text-xs">
-                      {product.category}
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-gray-600 mb-2 text-sm line-clamp-2">{product.description}</p>
-                {product.stockQuantity !== undefined && (
-                  <p className="text-xs text-gray-500 mb-2">
-                    In stock: {product.stockQuantity} {product.stockQuantity === 1 ? 'unit' : 'units'}
-                  </p>
-                )}
-                <div className="flex justify-between items-center mt-4">
-                  <p className="text-lg font-bold">${product.price.toFixed(2)}</p>
-                  <Button 
-                    onClick={() => handleAddToCart(product)}
-                    className="bg-indigo-600 hover:bg-indigo-700"
-                    size="sm"
-                    disabled={product.stockQuantity !== undefined && product.stockQuantity <= 0}
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-1" />
-                    Add to Cart
-                  </Button>
+              <CardContent className="p-2">
+                <div className="flex flex-col h-full">
+                  <h3 className="font-semibold text-sm truncate" title={product.name}>{product.name}</h3>
+                  <p className="text-xs text-gray-600 line-clamp-1" title={product.description}>{product.description}</p>
+                  <div className="mt-auto pt-2">
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-sm font-semibold">${product.price.toFixed(2)}</p>
+                      <Button 
+                        onClick={() => handleAddToCart(product)}
+                        className="h-7 px-2 bg-indigo-600 hover:bg-indigo-700"
+                        size="sm"
+                        disabled={product.stockQuantity !== undefined && product.stockQuantity <= 0}
+                      >
+                        <ShoppingCart className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    {product.stockQuantity !== undefined && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Stock: {product.stockQuantity}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
