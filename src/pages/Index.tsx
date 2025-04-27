@@ -4,9 +4,6 @@ import { Product, SalesData } from '@/types';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { MainNavigation } from '@/components/MainNavigation';
 import { Dashboard } from '@/components/Dashboard';
-import { Button } from '@/components/ui/button';
-import { ShoppingCart, LayoutDashboard } from 'lucide-react';
-import { POSView } from '@/components/POSView';
 import { productData } from '@/data/products';
 
 const sampleSalesData: SalesData[] = [
@@ -34,17 +31,9 @@ const sampleRecentActivity = [
 ];
 
 const Index = () => {
-  const [activeView, setActiveView] = useState<'dashboard' | 'pos'>('dashboard');
   const [products, setProducts] = useState<Product[]>(productData);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(activeView === 'pos');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
-  useEffect(() => {
-    // Auto-collapse sidebar when viewing POS
-    if (activeView === 'pos') {
-      setSidebarCollapsed(true);
-    }
-  }, [activeView]);
-
   useEffect(() => {
     // Speak page overview when the page loads
     const timer = setTimeout(() => {
@@ -63,43 +52,19 @@ const Index = () => {
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm py-4 px-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800">
-                {activeView === 'dashboard' ? 'Dashboard' : 'Point of Sale'}
-              </h1>
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                variant={activeView === 'dashboard' ? 'default' : 'outline'}
-                onClick={() => setActiveView('dashboard')}
-              >
-                <LayoutDashboard className="h-4 w-4 mr-2" /> Dashboard
-              </Button>
-              <Button 
-                variant={activeView === 'pos' ? 'default' : 'outline'}
-                onClick={() => setActiveView('pos')}
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" /> POS
-              </Button>
-            </div>
-          </div>
+          <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
         </header>
         
         <main className="flex-1 overflow-y-auto p-6">
-          {activeView === 'dashboard' ? (
-            <Dashboard 
-              totalSales={12458.99}
-              totalOrders={142}
-              totalCustomers={64}
-              totalProducts={products.length}
-              salesData={sampleSalesData}
-              topSellingProducts={sampleTopSellingProducts}
-              recentActivity={sampleRecentActivity}
-            />
-          ) : (
-            <POSView products={products} setProducts={setProducts} />
-          )}
+          <Dashboard 
+            totalSales={12458.99}
+            totalOrders={142}
+            totalCustomers={64}
+            totalProducts={products.length}
+            salesData={sampleSalesData}
+            topSellingProducts={sampleTopSellingProducts}
+            recentActivity={sampleRecentActivity}
+          />
         </main>
       </div>
     </div>

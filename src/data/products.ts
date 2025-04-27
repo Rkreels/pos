@@ -11,7 +11,7 @@ export const productData: Product[] = [
     stockQuantity: 45,
     sku: 'COF001',
     cost: 10.50,
-    image: 'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?q=80&w=2264&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1518057111178-44a106bad149?q=80&w=300'
   },
   {
     id: '2',
@@ -22,7 +22,7 @@ export const productData: Product[] = [
     stockQuantity: 20,
     sku: 'EAR002',
     cost: 45.00,
-    image: 'https://images.unsplash.com/photo-1610792516307-ea5acd9c3b00?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=870&q=80'
+    image: 'https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?q=80&w=300'
   },
   {
     id: '3',
@@ -33,7 +33,7 @@ export const productData: Product[] = [
     stockQuantity: 15,
     sku: 'FIT003',
     cost: 25.00,
-    image: 'https://images.unsplash.com/photo-1576243345690-4e4b79b63288?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTF8fGZpdG5lc3MlMjB0cmFja2VyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60'
+    image: 'https://images.unsplash.com/photo-1576243345690-4e4b79b63288?q=80&w=300'
   },
   {
     id: '4',
@@ -44,7 +44,7 @@ export const productData: Product[] = [
     stockQuantity: 30,
     sku: 'NTB004',
     cost: 12.00,
-    image: 'https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bm90ZWJvb2t8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60'
+    image: 'https://images.unsplash.com/photo-1531346878377-a5be20888e57?q=80&w=300'
   },
   {
     id: '5',
@@ -55,7 +55,7 @@ export const productData: Product[] = [
     stockQuantity: 25,
     sku: 'CHR005',
     cost: 18.50,
-    image: 'https://images.unsplash.com/photo-1609091839311-d6070e4e4d38?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTZ8fHBvd2VyJTIwYmFua3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
+    image: 'https://images.unsplash.com/photo-1585338667853-bef5325b4d55?q=80&w=300'
   },
   {
     id: '6',
@@ -66,215 +66,215 @@ export const productData: Product[] = [
     stockQuantity: 50,
     sku: 'BOT006',
     cost: 5.75,
-    image: 'https://images.unsplash.com/photo-1625708458528-275d16a0cce6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8d2F0ZXIlMjBib3R0bGV8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60'
+    image: 'https://images.unsplash.com/photo-1559705421-4ae9bf6fabb5?q=80&w=300'
   },
   {
     id: '7',
     name: 'Bluetooth Speaker',
-    price: 49.99,
-    description: 'Portable waterproof speaker with deep bass',
+    price: 69.99,
+    description: 'Waterproof portable speaker with deep bass',
     category: 'Electronics',
     stockQuantity: 18,
     sku: 'SPK007',
-    cost: 22.00,
-    image: 'https://images.unsplash.com/photo-1589003077984-894e133dabab?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8Ymx1ZXRvb3RoJTIwc3BlYWtlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
+    cost: 32.00,
+    image: 'https://images.unsplash.com/photo-1589003077984-894e133dabab?q=80&w=300'
   },
   {
     id: '8',
-    name: 'Organic Green Tea',
-    price: 12.99,
-    description: 'Premium loose leaf green tea, pack of 50g',
+    name: 'Organic Tea Set',
+    price: 29.99,
+    description: 'Collection of premium organic teas',
     category: 'Beverages',
-    stockQuantity: 35,
+    stockQuantity: 22,
     sku: 'TEA008',
-    cost: 6.00,
-    image: 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Z3JlZW4lMjB0ZWF8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60'
+    cost: 12.50,
+    image: 'https://images.unsplash.com/photo-1547825407-2d060104b7f8?q=80&w=300'
   },
   {
     id: '9',
-    name: 'Mechanical Keyboard',
-    price: 99.99,
-    description: 'RGB backlit mechanical gaming keyboard',
-    category: 'Electronics',
-    stockQuantity: 12,
-    sku: 'KEY009',
-    cost: 45.50,
-    image: 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8bWVjaGFuaWNhbCUyMGtleWJvYXJkfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Desk Lamp',
+    price: 34.99,
+    description: 'LED desk lamp with adjustable brightness',
+    category: 'Home',
+    stockQuantity: 15,
+    sku: 'LMP009',
+    cost: 18.00,
+    image: 'https://images.unsplash.com/photo-1534105615256-13940a56ff9e?q=80&w=300'
   },
   {
     id: '10',
-    name: 'Leather Wallet',
-    price: 34.99,
-    description: 'Genuine leather wallet with RFID protection',
-    category: 'Accessories',
-    stockQuantity: 40,
-    sku: 'WAL010',
-    cost: 15.25,
-    image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bGVhdGhlciUyMHdhbGxldHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Mechanical Keyboard',
+    price: 129.99,
+    description: 'RGB mechanical gaming keyboard',
+    category: 'Electronics',
+    stockQuantity: 12,
+    sku: 'KBD010',
+    cost: 65.00,
+    image: 'https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?q=80&w=300'
   },
   {
     id: '11',
-    name: 'Protein Bar',
-    price: 2.99,
-    description: 'High protein snack bar, 20g protein',
-    category: 'Food',
-    stockQuantity: 100,
-    sku: 'BAR011',
-    cost: 1.25,
-    image: 'https://images.unsplash.com/photo-1622484212850-eb596d769edc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTJ8fHByb3RlaW4lMjBiYXJ8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60'
+    name: 'Yoga Mat',
+    price: 45.99,
+    description: 'Non-slip eco-friendly yoga mat',
+    category: 'Fitness',
+    stockQuantity: 25,
+    sku: 'YGA011',
+    cost: 20.00,
+    image: 'https://images.unsplash.com/photo-1607619056574-7b8d3ee536b2?q=80&w=300'
   },
   {
     id: '12',
-    name: 'Yoga Mat',
-    price: 29.99,
-    description: 'Non-slip exercise yoga mat with carry strap',
-    category: 'Fitness',
-    stockQuantity: 25,
-    sku: 'YOG012',
-    cost: 12.50,
-    image: 'https://images.unsplash.com/photo-1592432678016-e910b452f9a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8eW9nYSUyMG1hdHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Scented Candle',
+    price: 18.50,
+    description: 'Handmade soy wax scented candle',
+    category: 'Home',
+    stockQuantity: 30,
+    sku: 'CND012',
+    cost: 7.25,
+    image: 'https://images.unsplash.com/photo-1608181831718-41aae6b24fd3?q=80&w=300'
   },
   {
     id: '13',
-    name: 'Scented Candle',
-    price: 14.99,
-    description: 'Vanilla scented soy wax candle, 8oz jar',
-    category: 'Home Decor',
-    stockQuantity: 30,
-    sku: 'CAN013',
-    cost: 5.75,
-    image: 'https://images.unsplash.com/photo-1603006945707-3fbf142c16de?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGNhbmRsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Leather Wallet',
+    price: 49.99,
+    description: 'Genuine leather wallet with RFID blocking',
+    category: 'Accessories',
+    stockQuantity: 35,
+    sku: 'WLT013',
+    cost: 22.50,
+    image: 'https://images.unsplash.com/photo-1627123424574-724758594e93?q=80&w=300'
   },
   {
     id: '14',
-    name: 'Face Moisturizer',
-    price: 24.99,
-    description: 'Hydrating face cream for all skin types, 50ml',
-    category: 'Beauty',
-    stockQuantity: 45,
-    sku: 'SKN014',
-    cost: 9.75,
-    image: 'https://images.unsplash.com/photo-1629732972972-2a49ddfafa34?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGZhY2UlMjBtb2lzdHVyaXplcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Ceramic Mug Set',
+    price: 26.99,
+    description: 'Set of 4 handcrafted ceramic mugs',
+    category: 'Home',
+    stockQuantity: 20,
+    sku: 'MUG014',
+    cost: 12.00,
+    image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?q=80&w=300'
   },
   {
     id: '15',
-    name: 'Plant Pot',
-    price: 18.99,
-    description: 'Ceramic plant pot with drainage, 6 inch',
-    category: 'Home Decor',
-    stockQuantity: 20,
-    sku: 'POT015',
-    cost: 7.50,
-    image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cGxhbnQlMjBwb3R8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60'
+    name: 'Drone Camera',
+    price: 299.99,
+    description: 'HD drone with stabilized camera',
+    category: 'Electronics',
+    stockQuantity: 8,
+    sku: 'DRN015',
+    cost: 150.00,
+    image: 'https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?q=80&w=300'
   },
   {
     id: '16',
-    name: 'Desk Lamp',
-    price: 32.99,
-    description: 'LED desk lamp with adjustable brightness',
-    category: 'Home Office',
-    stockQuantity: 15,
-    sku: 'LMP016',
-    cost: 14.25,
-    image: 'https://images.unsplash.com/photo-1534189083624-6446cb5d7334?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTh8fGRlc2slMjBsYW1wfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Succulent Plant Set',
+    price: 24.99,
+    description: 'Set of 3 small succulents in ceramic pots',
+    category: 'Home',
+    stockQuantity: 40,
+    sku: 'PLT016',
+    cost: 10.00,
+    image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?q=80&w=300'
   },
   {
     id: '17',
-    name: 'Phone Case',
-    price: 19.99,
-    description: 'Shock-absorbing phone case for iPhone 14',
-    category: 'Electronics',
-    stockQuantity: 60,
-    sku: 'CSE017',
-    cost: 5.50,
-    image: 'https://images.unsplash.com/photo-1592921304558-c6fdf548fd40?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8cGhvbmUlMjBjYXNlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Bamboo Cutting Board',
+    price: 32.99,
+    description: 'Eco-friendly bamboo cutting board',
+    category: 'Kitchen',
+    stockQuantity: 22,
+    sku: 'CTB017',
+    cost: 15.00,
+    image: 'https://images.unsplash.com/photo-1544621678-d4641fe40f7e?q=80&w=300'
   },
   {
     id: '18',
-    name: 'Hair Dryer',
-    price: 49.99,
-    description: 'Ionic hair dryer with 3 heat settings',
-    category: 'Beauty',
-    stockQuantity: 18,
-    sku: 'DRY018',
-    cost: 22.50,
-    image: 'https://images.unsplash.com/photo-1621607512022-6aecc4fed814?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8aGFpciUyMGRyeWVyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Smart Watch',
+    price: 199.99,
+    description: 'Fitness and health tracking smartwatch',
+    category: 'Electronics',
+    stockQuantity: 14,
+    sku: 'SWT018',
+    cost: 95.00,
+    image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=300'
   },
   {
     id: '19',
-    name: 'Photo Frame',
-    price: 16.99,
-    description: 'Wooden picture frame, 5x7 inches',
-    category: 'Home Decor',
-    stockQuantity: 35,
-    sku: 'FRM019',
-    cost: 6.75,
-    image: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f36?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8cGhvdG8lMjBmcmFtZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Bath Bombs Set',
+    price: 19.99,
+    description: 'Set of 6 organic bath bombs',
+    category: 'Beauty',
+    stockQuantity: 45,
+    sku: 'BTH019',
+    cost: 8.50,
+    image: 'https://images.unsplash.com/photo-1627875777236-39a5906d7cf4?q=80&w=300'
   },
   {
     id: '20',
-    name: 'Reusable Straw Set',
-    price: 9.99,
-    description: 'Stainless steel straws with cleaning brush, set of 4',
-    category: 'Kitchen',
-    stockQuantity: 70,
-    sku: 'STR020',
-    cost: 3.25,
-    image: 'https://images.unsplash.com/photo-1571115732397-8d0231f8a038?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8cmV1c2FibGUlMjBzdHJhd3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Artisan Chocolate Box',
+    price: 27.99,
+    description: 'Handcrafted chocolate assortment',
+    category: 'Food',
+    stockQuantity: 28,
+    sku: 'CHC020',
+    cost: 12.00,
+    image: 'https://images.unsplash.com/photo-1548907040-4baa42d10919?q=80&w=300'
   },
   {
     id: '21',
-    name: 'Storage Basket',
-    price: 22.99,
-    description: 'Woven storage basket with handles, medium size',
-    category: 'Home Decor',
-    stockQuantity: 25,
-    sku: 'BSK021',
-    cost: 9.50,
-    image: 'https://images.unsplash.com/photo-1587304791558-bee8018154c7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NXx8c3RvcmFnZSUyMGJhc2tldHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Stainless Steel Pan',
+    price: 64.99,
+    description: 'Professional-grade stainless steel frying pan',
+    category: 'Kitchen',
+    stockQuantity: 16,
+    sku: 'PAN021',
+    cost: 30.00,
+    image: 'https://images.unsplash.com/photo-1620865266262-5f61336ca571?q=80&w=300'
   },
   {
     id: '22',
-    name: 'Travel Mug',
-    price: 17.99,
-    description: 'Leak-proof insulated travel mug, 16oz',
-    category: 'Beverages',
-    stockQuantity: 40,
-    sku: 'MUG022',
-    cost: 7.25,
-    image: 'https://images.unsplash.com/photo-1530373779501-2ee0839f6a6a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8dHJhdmVsJTIwbXVnfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Book Stand',
+    price: 23.99,
+    description: 'Adjustable wooden book stand',
+    category: 'Office Supplies',
+    stockQuantity: 25,
+    sku: 'BKS022',
+    cost: 11.00,
+    image: 'https://images.unsplash.com/photo-1584391976626-7b605a4ec9e1?q=80&w=300'
   },
   {
     id: '23',
-    name: 'Running Socks',
-    price: 12.99,
-    description: 'Cushioned athletic socks, pack of 3 pairs',
-    category: 'Fitness',
-    stockQuantity: 55,
-    sku: 'SOX023',
-    cost: 5.50,
-    image: 'https://images.unsplash.com/photo-1589526261771-452eb39c646d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8c29ja3N8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60'
+    name: 'Hair Dryer',
+    price: 49.99,
+    description: 'Professional ionic hair dryer',
+    category: 'Beauty',
+    stockQuantity: 18,
+    sku: 'DRY023',
+    cost: 22.00,
+    image: 'https://images.unsplash.com/photo-1591375782101-1a9df536ff04?q=80&w=300'
   },
   {
     id: '24',
-    name: 'USB-C Cable',
-    price: 14.99,
-    description: 'Fast charging braided USB-C cable, 6ft',
-    category: 'Electronics',
-    stockQuantity: 80,
-    sku: 'CBL024',
-    cost: 3.75,
-    image: 'https://images.unsplash.com/photo-1601524909162-ae8725290836?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dXNiJTIwY2FibGV8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60'
+    name: 'Spice Rack',
+    price: 36.99,
+    description: 'Rotating spice rack with 16 jars',
+    category: 'Kitchen',
+    stockQuantity: 22,
+    sku: 'SPC024',
+    cost: 17.50,
+    image: 'https://images.unsplash.com/photo-1518110925495-5fe2fda0442e?q=80&w=300'
   },
   {
     id: '25',
-    name: 'Cutting Board',
-    price: 27.99,
-    description: 'Bamboo cutting board with juice groove',
-    category: 'Kitchen',
-    stockQuantity: 30,
-    sku: 'BRD025',
-    cost: 12.25,
-    image: 'https://images.unsplash.com/photo-1579439567949-0825d5778590?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8Y3V0dGluZyUyMGJvYXJkfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60'
+    name: 'Digital Drawing Tablet',
+    price: 119.99,
+    description: 'Pressure-sensitive drawing tablet',
+    category: 'Electronics',
+    stockQuantity: 10,
+    sku: 'DRW025',
+    cost: 60.00,
+    image: 'https://images.unsplash.com/photo-1598986646512-9330bcc4c0dc?q=80&w=300'
   }
 ];

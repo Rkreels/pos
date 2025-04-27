@@ -28,9 +28,6 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
 
   const handleAddToCart = (product: Product) => {
     onAddToCart(product);
-    voiceAssistant.speak(
-      "Here are the available products. You can search for items using the search bar or filter by category. Browse through the items and click 'Add to Cart' for products you'd like to purchase."
-    );
   };
 
   React.useEffect(() => {
@@ -76,7 +73,7 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
           No products found matching your search
         </div>
       ) : (
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
           {filteredProducts.map((product) => (
             <Card key={product.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-2">
