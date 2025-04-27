@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Product, CartItem, SalesData } from '@/types';
 import { ProductList } from '@/components/ProductList';
@@ -7,6 +6,8 @@ import { voiceAssistant } from '@/services/VoiceAssistant';
 import { MainNavigation } from '@/components/MainNavigation';
 import { Dashboard } from '@/components/Dashboard';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { ShoppingCart, LayoutDashboard } from 'lucide-react';
 
 // Sample products data with additional properties
 const sampleProducts: Product[] = [
@@ -376,5 +377,4 @@ const Index = () => {
   );
 };
 
-import { LayoutDashboard } from 'lucide-react';
 export default Index;
