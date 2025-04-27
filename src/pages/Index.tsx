@@ -7,102 +7,8 @@ import { Dashboard } from '@/components/Dashboard';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, LayoutDashboard } from 'lucide-react';
 import { POSView } from '@/components/POSView';
+import { productData } from '@/data/products';
 
-// Sample products data with additional properties
-const sampleProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Premium Coffee',
-    price: 19.99,
-    description: 'Freshly roasted arabica coffee beans',
-    category: 'Beverages',
-    stockQuantity: 45,
-    sku: 'COF001',
-    cost: 10.50
-  },
-  {
-    id: '2',
-    name: 'Wireless Earbuds',
-    price: 89.99,
-    description: 'High-quality sound with noise cancellation',
-    category: 'Electronics',
-    stockQuantity: 20,
-    sku: 'EAR002',
-    cost: 45.00
-  },
-  {
-    id: '3',
-    name: 'Fitness Tracker',
-    price: 59.99,
-    description: 'Monitor your activities and health metrics',
-    category: 'Electronics',
-    stockQuantity: 15,
-    sku: 'FIT003',
-    cost: 25.00
-  },
-  {
-    id: '4',
-    name: 'Smart Notebook',
-    price: 24.99,
-    description: 'Digitize your handwritten notes instantly',
-    category: 'Office Supplies',
-    stockQuantity: 30,
-    sku: 'NTB004',
-    cost: 12.00
-  },
-  {
-    id: '5',
-    name: 'Portable Charger',
-    price: 39.99,
-    description: '20,000mAh fast-charging power bank',
-    category: 'Electronics',
-    stockQuantity: 25,
-    sku: 'CHR005',
-    cost: 18.50
-  },
-  {
-    id: '6',
-    name: 'Water Bottle',
-    price: 15.99,
-    description: 'Insulated stainless steel water bottle',
-    category: 'Accessories',
-    stockQuantity: 50,
-    sku: 'BOT006',
-    cost: 5.75
-  },
-  {
-    id: '7',
-    name: 'Bluetooth Speaker',
-    price: 49.99,
-    description: 'Portable waterproof speaker with deep bass',
-    category: 'Electronics',
-    stockQuantity: 18,
-    sku: 'SPK007',
-    cost: 22.00
-  },
-  {
-    id: '8',
-    name: 'Organic Green Tea',
-    price: 12.99,
-    description: 'Premium loose leaf green tea, pack of 50g',
-    category: 'Beverages',
-    stockQuantity: 35,
-    sku: 'TEA008',
-    cost: 6.00
-  },
-  {
-    id: '9',
-    name: 'Mechanical Keyboard',
-    price: 99.99,
-    description: 'RGB backlit mechanical gaming keyboard',
-    category: 'Electronics',
-    stockQuantity: 12,
-    sku: 'KEY009',
-    cost: 45.50
-  },
-];
-
-// Sample dashboard data
 const sampleSalesData: SalesData[] = [
   { date: 'Jan 1', sales: 4000, transactions: 24 },
   { date: 'Jan 2', sales: 3000, transactions: 18 },
@@ -129,8 +35,16 @@ const sampleRecentActivity = [
 
 const Index = () => {
   const [activeView, setActiveView] = useState<'dashboard' | 'pos'>('dashboard');
-  const [products, setProducts] = useState<Product[]>(sampleProducts);
+  const [products, setProducts] = useState<Product[]>(productData);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(activeView === 'pos');
   
+  useEffect(() => {
+    // Auto-collapse sidebar when viewing POS
+    if (activeView === 'pos') {
+      setSidebarCollapsed(true);
+    }
+  }, [activeView]);
+
   useEffect(() => {
     // Speak page overview when the page loads
     const timer = setTimeout(() => {
@@ -145,7 +59,7 @@ const Index = () => {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <MainNavigation />
+      <MainNavigation isCollapsed={sidebarCollapsed} toggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm py-4 px-6">

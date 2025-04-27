@@ -9,7 +9,9 @@ import {
   Users, 
   Settings,
   Menu,
-  X
+  X,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -54,11 +56,26 @@ const NavItem: React.FC<NavItemProps> = ({
   );
 };
 
-export const MainNavigation: React.FC = () => {
-  const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(true);
+interface MainNavigationProps {
+  isCollapsed?: boolean;
+  toggleCollapsed?: () => void;
+}
+
+export const MainNavigation: React.FC<MainNavigationProps> = ({ 
+  isCollapsed = false, 
+  toggleCollapsed 
+}) => {
+  const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(!isCollapsed);
   
+  React.useEffect(() => {
+    setIsSidebarExpanded(!isCollapsed);
+  }, [isCollapsed]);
+
   const toggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
+    if (toggleCollapsed) {
+      toggleCollapsed();
+    }
   };
 
   return (
@@ -79,7 +96,7 @@ export const MainNavigation: React.FC = () => {
             onClick={toggleSidebar}
             className="h-8 w-8"
           >
-            {isSidebarExpanded ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            {isSidebarExpanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           </Button>
         </div>
         

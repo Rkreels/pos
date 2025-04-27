@@ -1,10 +1,13 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Product, CartItem } from '@/types';
 import { ProductList } from '@/components/ProductList';
 import { Cart } from '@/components/Cart';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { toast } from 'sonner';
+import { ReceiptHistory } from '@/components/ReceiptHistory';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ShoppingCart, ReceiptText } from 'lucide-react';
 
 interface POSViewProps {
   products: Product[];
@@ -12,7 +15,8 @@ interface POSViewProps {
 }
 
 export const POSView: React.FC<POSViewProps> = ({ products, setProducts }) => {
-  const [cartItems, setCartItems] = React.useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [activeTab, setActiveTab] = useState<string>('pos');
 
   const calculateTotal = () => {
     return cartItems.reduce(
@@ -171,18 +175,37 @@ export const POSView: React.FC<POSViewProps> = ({ products, setProducts }) => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6">
-      <div className="flex-1">
-        <ProductList products={products} onAddToCart={handleAddToCart} />
-      </div>
-      <div className="w-full lg:w-96">
-        <Cart
-          items={cartItems}
-          onUpdateQuantity={handleUpdateQuantity}
-          onRemoveItem={handleRemoveItem}
-          onCheckout={handleCheckout}
-        />
-      </div>
+    <div className="flex flex-col gap-4">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid grid-cols-2 w-52">
+          <TabsTrigger value="pos" className="flex items-center gap-2">
+            <ShoppingCart className="h-4 w-4" /> Sales
+          </TabsTrigger>
+          <TabsTrigger value="receipts" className="flex items-center gap-2">
+            <ReceiptText className="h-4 w-4" /> Receipts
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="pos" className="mt-4">
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="flex-1">
+              <ProductList products={products} onAddToCart={handleAddToCart} />
+            </div>
+            <div className="w-full lg:w-96">
+              <Cart
+                items={cartItems}
+                onUpdateQuantity={handleUpdateQuantity}
+                onRemoveItem={handleRemoveItem}
+                onCheckout={handleCheckout}
+              />
+            </div>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="receipts" className="mt-4">
+          <ReceiptHistory />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

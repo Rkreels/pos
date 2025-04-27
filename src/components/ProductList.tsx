@@ -76,7 +76,7 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
           No products found matching your search
         </div>
       ) : (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
           {filteredProducts.map((product) => (
             <Card key={product.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-2">
@@ -94,16 +94,16 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
                       </div>
                     )}
                   </div>
-                  <h3 className="font-semibold text-sm truncate" title={product.name}>{product.name}</h3>
+                  <h3 className="font-semibold text-xs truncate" title={product.name}>{product.name}</h3>
                   <p className="text-xs text-gray-600 line-clamp-1" title={product.description}>
                     {product.description}
                   </p>
                   <div className="mt-auto pt-2">
                     <div className="flex items-center justify-between gap-1">
-                      <p className="text-sm font-semibold">${product.price.toFixed(2)}</p>
+                      <p className="text-xs font-semibold">${product.price.toFixed(2)}</p>
                       <Button 
                         onClick={() => handleAddToCart(product)}
-                        className="h-7 px-2"
+                        className="h-6 px-1.5"
                         size="sm"
                         disabled={product.stockQuantity !== undefined && product.stockQuantity <= 0}
                       >

@@ -42,8 +42,15 @@ export const Receipt: React.FC<ReceiptProps> = ({
       printWindow.document.write(`
         <html>
           <head>
+            <title>Receipt</title>
             <style>
-              body { font-family: 'Courier New', monospace; font-size: 12px; width: 300px; margin: 0; padding: 10px; }
+              body { 
+                font-family: 'Courier New', monospace; 
+                font-size: 12px; 
+                width: 300px; 
+                margin: 0; 
+                padding: 10px; 
+              }
               .header { text-align: center; margin-bottom: 10px; }
               .customer-info { margin: 10px 0; }
               .item { margin: 5px 0; }
@@ -52,7 +59,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
               .dashed-line { border-top: 1px dashed #000; margin: 5px 0; }
               @media print {
                 body { width: 80mm; } /* Standard thermal paper width */
-                @page { margin: 0; }
+                @page { margin: 0mm; size: 80mm auto; }
               }
             </style>
           </head>
@@ -64,10 +71,15 @@ export const Receipt: React.FC<ReceiptProps> = ({
 
       printWindow.document.close();
       printWindow.focus();
-      printWindow.print();
-      printWindow.close();
       
-      onPrint();
+      // Delay printing slightly to ensure the content is loaded
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.onafterprint = () => {
+          printWindow.close();
+          onPrint();
+        };
+      }, 300);
     } catch (error) {
       console.error('Printing failed:', error);
     }
@@ -146,7 +158,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
           {paymentMethod && (
             <div className="flex justify-between mt-2">
               <span>Payment Method:</span>
-              <span>{paymentMethod}</span>
+              <span>{paymentMethod.charAt(0).toUpperCase() + paymentMethod.slice(1)}</span>
             </div>
           )}
         </div>
@@ -167,8 +179,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
       
       <Button 
         onClick={printReceipt}
-        className="w-full mt-2"
-        variant="outline"
+        className="w-full mt-4"
       >
         <Printer className="mr-2 h-4 w-4" />
         Print Receipt
