@@ -57,7 +57,7 @@ const Index = () => {
     // Speak page overview when the page loads
     const timer = setTimeout(() => {
       if (currentUser.role === 'master') {
-        voiceAssistant.speak("Welcome to the Master Manager Dashboard. Here you can oversee all shops under your management. You can compare performance metrics, view shop statuses, and access individual shop data.");
+        voiceAssistant.speakMasterDashboard();
       } else {
         voiceAssistant.speakPageOverview();
       }

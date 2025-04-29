@@ -44,6 +44,9 @@ export interface CustomerTransaction {
   paymentMethod: string;
 }
 
+// Adding ProductReference to fix supplier products array issues
+export type ProductReference = string | Product;
+
 export interface Supplier {
   id: string;
   name: string;
@@ -51,7 +54,7 @@ export interface Supplier {
   email: string;
   phone: string;
   address: string;
-  products?: Product[];
+  products?: ProductReference[];
 }
 
 export interface User {
@@ -95,4 +98,16 @@ export interface ShopContextType {
   shops: Shop[];
   setCurrentShop: (shop: Shop) => void;
   refreshShops: () => void;
+}
+
+// Adding SimpleProduct for use in components that don't need the full Product interface
+export interface SimpleProduct {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  category?: string;
+  sku?: string;
+  cost?: number;
+  stockQuantity?: number;
 }

@@ -13,7 +13,7 @@ const POSPage: React.FC = () => {
   useEffect(() => {
     // Speak page overview when the page loads
     const timer = setTimeout(() => {
-      voiceAssistant.speakPageOverview();
+      voiceAssistant.speakPOSPage();
     }, 500);
     
     return () => {
