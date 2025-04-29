@@ -8,12 +8,20 @@ import Index from "./pages/Index";
 import POSPage from "./pages/POSPage";
 import NotFound from "./pages/NotFound";
 import { lazy, Suspense } from "react";
+import { Loader2 } from "lucide-react";
 
 // Lazy loaded components for better performance
 const InventoryPage = lazy(() => import('./pages/InventoryPage'));
 const ReportsPage = lazy(() => import('./pages/ReportsPage'));
 const CustomersPage = lazy(() => import('./pages/CustomersPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+
+// Loading fallback component for lazy-loaded routes
+const LoadingFallback = () => (
+  <div className="flex h-screen w-full items-center justify-center">
+    <Loader2 className="h-10 w-10 animate-spin text-primary" />
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -26,10 +34,38 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/pos" element={<POSPage />} />
-          <Route path="/inventory" element={<InventoryPage />} />
-          <Route path="/reports" element={<ReportsPage />} />
-          <Route path="/customers" element={<CustomersPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
+          <Route 
+            path="/inventory" 
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <InventoryPage />
+              </Suspense>
+            } 
+          />
+          <Route 
+            path="/reports" 
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <ReportsPage />
+              </Suspense>
+            } 
+          />
+          <Route 
+            path="/customers" 
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <CustomersPage />
+              </Suspense>
+            } 
+          />
+          <Route 
+            path="/settings" 
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <SettingsPage />
+              </Suspense>
+            } 
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
