@@ -12,11 +12,14 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  Truck
+  Truck,
+  Building
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { voiceAssistant } from '@/services/VoiceAssistant';
+import { ShopSelector } from '@/components/ShopSelector';
+import { useShop } from '@/context/ShopContext';
 
 interface NavItemProps {
   to: string;
@@ -70,6 +73,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
   toggleCollapsed 
 }) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(!isCollapsed);
+  const { currentShop } = useShop();
   
   React.useEffect(() => {
     setIsSidebarExpanded(!isCollapsed);
@@ -88,7 +92,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
       isSidebarExpanded ? "w-60" : "w-16"
     )}>
       <div className="p-4">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-4">
           {isSidebarExpanded ? (
             <h1 className="font-bold text-lg">POS System</h1>
           ) : (
@@ -103,6 +107,12 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             {isSidebarExpanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           </Button>
         </div>
+
+        {isSidebarExpanded && (
+          <div className="mb-4">
+            <ShopSelector />
+          </div>
+        )}
         
         <div className="space-y-1">
           <NavItem 
@@ -146,6 +156,13 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             title="Customers" 
             isSidebarExpanded={isSidebarExpanded}
             speakFunction={() => voiceAssistant.speakCustomersPage()}
+          />
+          <NavItem 
+            to="/shops" 
+            icon={Building} 
+            title="Shops" 
+            isSidebarExpanded={isSidebarExpanded}
+            speakFunction={() => voiceAssistant.speakShopManagement()}
           />
           <NavItem 
             to="/settings" 

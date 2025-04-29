@@ -1,4 +1,3 @@
-
 class VoiceAssistant {
   private static instance: VoiceAssistant;
   private synthesis: SpeechSynthesis;
@@ -134,9 +133,9 @@ class VoiceAssistant {
   // Enhanced page context-aware speeches with examples and directions
   speakPageOverview() {
     const overview = 
-      "Welcome to the Professional POS System. This application allows you to manage your entire business operations. " +
-      "You can access the dashboard for a summary, process sales in the POS page, manage inventory, view reports, and handle customer data. " +
-      "The sidebar on the left allows you to navigate between different sections of the application. " +
+      "Welcome to the Professional POS System. This SaaS application allows you to manage multiple shops from a single dashboard. " +
+      "You can access the dashboard for a summary, process sales in the POS page, manage inventory across locations, view reports, and handle customer data. " +
+      "The sidebar on the left allows you to navigate between different sections of the application and switch between shops. " +
       "Let me help you get started with this platform. What would you like to explore first?";
     
     this.speak(overview);
@@ -343,6 +342,20 @@ class VoiceAssistant {
       `The export includes all transactions, product details, and calculated metrics. ` +
       `You can use this data for accounting purposes, business planning, or sharing with stakeholders. ` +
       `Your download should begin shortly.`;
+    
+    this.speak(message);
+  }
+  
+  speakShopManagement() {
+    const message = 
+      "You're now in the Shop Management section. Here you can manage all the shops in your organization. " +
+      "Each shop represents a physical or online store that you operate. " +
+      "The table displays all your shops with their details and status. " +
+      "You can add a new shop by clicking the 'Add Shop' button at the top right. " +
+      "To select a shop as your current active shop, click the 'Select' button next to any shop. " +
+      "You can edit shop details by clicking the pencil icon or delete shops using the trash icon. " +
+      "The cards at the top show you the total number of shops, how many are active, and which shop is currently selected. " +
+      "When you switch shops, all inventory, sales, and customer data will be filtered for that specific location.";
     
     this.speak(message);
   }

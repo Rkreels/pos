@@ -1,21 +1,20 @@
-
 export interface Product {
   id: string;
   name: string;
-  price: number;
   description: string;
-  category?: string;
-  stockQuantity?: number;
-  barcode?: string;
-  sku?: string;
+  price: number;
+  stockQuantity: number;
   image?: string;
-  cost?: number;
+  category: string;
+  sku: string;
+  cost: number;
   supplierId?: string;
 }
 
-export interface CartItem {
-  product: Product;
-  quantity: number;
+export interface SalesData {
+  date: string;
+  sales: number;
+  transactions: number;
 }
 
 export interface Customer {
@@ -27,86 +26,65 @@ export interface Customer {
   loyaltyPoints?: number;
 }
 
-export interface Order {
+export interface CustomerTransaction {
   id: string;
-  customerId?: string;
-  items: CartItem[];
-  total: number;
-  tax: number;
-  subtotal: number;
   date: Date;
+  total: number;
+  items: {
+    product: Product;
+    quantity: number;
+  }[];
   paymentMethod: string;
-  status: 'pending' | 'completed' | 'refunded';
-}
-
-export interface SalesData {
-  date: string;
-  sales: number;
-  transactions: number;
-}
-
-export interface ProductCategory {
-  id: string;
-  name: string;
-  description?: string;
-}
-
-export interface UserRole {
-  id: string;
-  name: 'admin' | 'manager' | 'cashier';
-  permissions: string[];
-}
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: UserRole;
-  active?: boolean;
 }
 
 export interface Supplier {
   id: string;
   name: string;
-  contactName?: string;
-  email?: string;
-  phone?: string;
-  address?: string;
-  products?: string[]; // Array of product IDs associated with this supplier
+  contactName: string;
+  email: string;
+  phone: string;
+  address: string;
+  products?: Product[];
 }
 
-export interface CustomerTransaction {
+// Update the User interface to include status as a string
+export interface User {
   id: string;
-  date: Date;
-  total: number;
-  items: CartItem[];
-  paymentMethod: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'manager' | 'cashier';
+  status: 'active' | 'inactive';
+  lastLogin?: string;
 }
 
-export interface WeeklyReportData {
-  week: string;
-  days: SalesData[];
-  totalSales: number;
-  totalTransactions: number;
-  comparisonToLastWeek: number; // percentage
+// Add Shop interface for multi-tenant support
+export interface Shop {
+  id: string;
+  name: string;
+  address: string;
+  phone?: string;
+  email?: string;
+  logo?: string;
+  ownerId: string;
+  status: 'active' | 'inactive';
+  createdAt: Date;
 }
 
-export interface MonthlyReportData {
-  month: string;
-  days: SalesData[];
-  totalSales: number;
-  totalTransactions: number;
-  comparisonToLastMonth: number; // percentage
+// Add Organization interface for SaaS model
+export interface Organization {
+  id: string;
+  name: string;
+  plan: 'free' | 'basic' | 'premium' | 'enterprise';
+  status: 'active' | 'inactive' | 'trial';
+  trialEndsAt?: Date;
+  createdAt: Date;
+  ownerId: string;
 }
 
-export interface YearlyReportData {
-  year: string;
-  months: {
-    month: string;
-    sales: number;
-    transactions: number;
-  }[];
-  totalSales: number;
-  totalTransactions: number;
-  comparisonToLastYear: number; // percentage
+// Add ShopContext for multi-shop support
+export interface ShopContextType {
+  currentShop: Shop | null;
+  shops: Shop[];
+  setCurrentShop: (shop: Shop) => void;
+  refreshShops: () => void;
 }

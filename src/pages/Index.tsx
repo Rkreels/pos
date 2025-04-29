@@ -5,6 +5,9 @@ import { voiceAssistant } from '@/services/VoiceAssistant';
 import { MainNavigation } from '@/components/MainNavigation';
 import { Dashboard } from '@/components/Dashboard';
 import { productData } from '@/data/products';
+import { useShop } from '@/context/ShopContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Store } from 'lucide-react';
 
 const sampleSalesData: SalesData[] = [
   { date: 'Jan 1', sales: 4000, transactions: 24 },
@@ -33,6 +36,7 @@ const sampleRecentActivity = [
 const Index = () => {
   const [products, setProducts] = useState<Product[]>(productData);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { currentShop, shops } = useShop();
   
   useEffect(() => {
     // Clear any previous speech and start new explanation after a slight delay
@@ -55,19 +59,40 @@ const Index = () => {
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm py-4 px-6">
-          <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
+            {currentShop && (
+              <Card className="border-0 shadow-none bg-transparent">
+                <CardContent className="p-0 flex items-center">
+                  <Store className="h-4 w-4 mr-2" />
+                  <span className="text-sm font-medium">
+                    Current Shop: {currentShop.name}
+                  </span>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </header>
         
         <main className="flex-1 overflow-y-auto p-6">
-          <Dashboard 
-            totalSales={12458.99}
-            totalOrders={142}
-            totalCustomers={64}
-            totalProducts={products.length}
-            salesData={sampleSalesData}
-            topSellingProducts={sampleTopSellingProducts}
-            recentActivity={sampleRecentActivity}
-          />
+          {!currentShop ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <Store className="h-16 w-16 text-gray-400 mb-4" />
+              <h2 className="text-2xl font-bold text-gray-700 mb-2">No Shop Selected</h2>
+              <p className="text-gray-500 mb-4">Please select a shop from the sidebar to view dashboard data.</p>
+              <p className="text-gray-500">You can manage your shops by going to the Shops page.</p>
+            </div>
+          ) : (
+            <Dashboard 
+              totalSales={12458.99}
+              totalOrders={142}
+              totalCustomers={64}
+              totalProducts={products.length}
+              salesData={sampleSalesData}
+              topSellingProducts={sampleTopSellingProducts}
+              recentActivity={sampleRecentActivity}
+            />
+          )}
         </main>
       </div>
     </div>
