@@ -191,7 +191,7 @@ export const POSView: React.FC<POSViewProps> = ({ products, setProducts }) => {
             <div className="flex-1">
               <ProductList products={products} onAddToCart={handleAddToCart} />
             </div>
-            <div className="w-full lg:w-[30%]"> {/* Slightly narrower cart */}
+            <div className="w-full lg:w-[25%]"> {/* Narrower cart (25% instead of 30%) */}
               <Cart
                 items={cartItems}
                 onUpdateQuantity={handleUpdateQuantity}

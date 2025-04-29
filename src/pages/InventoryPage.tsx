@@ -6,6 +6,7 @@ import { Product } from '@/types';
 import { toast } from 'sonner';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { productData } from '@/data/products';
+import { supplierData } from '@/data/suppliers';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,8 +25,10 @@ const InventoryPage: React.FC = () => {
     stockQuantity: 0,
     sku: '',
     cost: 0,
+    supplierId: '',
   });
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [newCategory, setNewCategory] = useState('');
   
   React.useEffect(() => {
     // Speak page overview when the page loads
@@ -40,8 +43,24 @@ const InventoryPage: React.FC = () => {
   }, []);
 
   const categories = [...new Set(products.map(product => product.category))].filter(Boolean);
+  
+  // Sample product images for new products
+  const sampleImages = [
+    'https://images.unsplash.com/photo-1567722681579-c673e675e296?q=80&w=300',
+    'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=300',
+    'https://images.unsplash.com/photo-1586495777744-4413f21062fa?q=80&w=300',
+    'https://images.unsplash.com/photo-1578312765176-3b5a8138e21b?q=80&w=300',
+    'https://images.unsplash.com/photo-1525904097878-94fb15835963?q=80&w=300',
+    'https://images.unsplash.com/photo-1587829741301-dc798b83add3?q=80&w=300',
+    'https://images.unsplash.com/photo-1601053044517-460df83b2138?q=80&w=300',
+    'https://images.unsplash.com/photo-1595535873420-a599195b3f4a?q=80&w=300',
+    'https://images.unsplash.com/photo-1606248897732-2c5ffe759c04?q=80&w=300',
+    'https://images.unsplash.com/photo-1556695869-9774cba7957f?q=80&w=300',
+  ];
 
   const handleUpdateStock = (productId: string, newQuantity: number) => {
+    if (newQuantity < 0) return;
+    
     setProducts(prevProducts => 
       prevProducts.map(p => 
         p.id === productId
@@ -66,14 +85,19 @@ const InventoryPage: React.FC = () => {
       stockQuantity: 0,
       sku: '',
       cost: 0,
+      supplierId: '',
     });
+    setNewCategory('');
     setIsDialogOpen(true);
+    voiceAssistant.speakAddProduct();
   };
 
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
-    setNewProduct(product);
+    setNewProduct({...product});
+    setNewCategory('');
     setIsDialogOpen(true);
+    voiceAssistant.speakEditProduct();
   };
 
   const handleDeleteProduct = (productId: string) => {
@@ -85,9 +109,22 @@ const InventoryPage: React.FC = () => {
   };
 
   const handleSaveProduct = () => {
-    if (!newProduct.name || !newProduct.price) {
-      toast.error('Name and price are required');
+    if (!newProduct.name || newProduct.price === undefined || newProduct.price <= 0) {
+      toast.error('Name and a valid price are required');
       return;
+    }
+
+    // Handle new category
+    let finalCategory = newProduct.category;
+    if (newCategory) {
+      finalCategory = newCategory;
+    }
+
+    // Get a random image from the sample images
+    let productImage = newProduct.image;
+    if (!productImage) {
+      const randomIndex = Math.floor(Math.random() * sampleImages.length);
+      productImage = sampleImages[randomIndex];
     }
 
     if (editingProduct) {
@@ -95,7 +132,12 @@ const InventoryPage: React.FC = () => {
       setProducts(prevProducts => 
         prevProducts.map(p => 
           p.id === editingProduct.id
-            ? { ...p, ...newProduct }
+            ? { 
+                ...p, 
+                ...newProduct,
+                category: finalCategory,
+                image: productImage
+              }
             : p
         )
       );
@@ -104,8 +146,9 @@ const InventoryPage: React.FC = () => {
       // Add new product
       const productToAdd = {
         ...newProduct,
-        id: `${Date.now()}`, // Simple ID generation
-        image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=300' // Default image
+        category: finalCategory,
+        id: `p${Date.now()}`, // Simple ID generation with prefix
+        image: productImage
       } as Product;
       
       setProducts(prevProducts => [...prevProducts, productToAdd]);
@@ -134,7 +177,7 @@ const InventoryPage: React.FC = () => {
           />
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="sm:max-w-[500px]">
+            <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
                 <DialogDescription>
@@ -151,6 +194,7 @@ const InventoryPage: React.FC = () => {
                     value={newProduct.name}
                     onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
                     className="col-span-3"
+                    placeholder="Product name"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -158,9 +202,12 @@ const InventoryPage: React.FC = () => {
                   <Input
                     id="price"
                     type="number"
+                    min="0"
+                    step="0.01"
                     value={newProduct.price}
                     onChange={(e) => setNewProduct({...newProduct, price: parseFloat(e.target.value) || 0})}
                     className="col-span-3"
+                    placeholder="Selling price"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -168,9 +215,12 @@ const InventoryPage: React.FC = () => {
                   <Input
                     id="cost"
                     type="number"
+                    min="0"
+                    step="0.01"
                     value={newProduct.cost}
                     onChange={(e) => setNewProduct({...newProduct, cost: parseFloat(e.target.value) || 0})}
                     className="col-span-3"
+                    placeholder="Purchase cost"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
@@ -180,47 +230,94 @@ const InventoryPage: React.FC = () => {
                     value={newProduct.sku}
                     onChange={(e) => setNewProduct({...newProduct, sku: e.target.value})}
                     className="col-span-3"
+                    placeholder="Stock keeping unit"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="category" className="text-right">Category</Label>
+                  {newCategory ? (
+                    <div className="col-span-3 flex gap-2">
+                      <Input
+                        value={newCategory}
+                        onChange={(e) => setNewCategory(e.target.value)}
+                        className="flex-1"
+                        placeholder="New category name"
+                      />
+                      <Button 
+                        variant="outline" 
+                        onClick={() => {
+                          setNewCategory('');
+                          setNewProduct({...newProduct, category: ''});
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="col-span-3 flex gap-2">
+                      <Select 
+                        value={newProduct.category} 
+                        onValueChange={(value) => {
+                          if (value === "new") {
+                            setNewCategory('');
+                          } else {
+                            setNewProduct({...newProduct, category: value});
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Select a category</SelectItem>
+                          {categories.map(category => (
+                            <SelectItem key={category} value={category}>
+                              {category}
+                            </SelectItem>
+                          ))}
+                          <SelectItem value="new">+ Add New Category</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {newProduct.category && (
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setNewCategory('New Category')}
+                        >
+                          New
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="supplier" className="text-right">Supplier</Label>
                   <Select 
-                    value={newProduct.category} 
-                    onValueChange={(value) => setNewProduct({...newProduct, category: value})}
+                    value={newProduct.supplierId || ''} 
+                    onValueChange={(value) => setNewProduct({...newProduct, supplierId: value})}
                   >
                     <SelectTrigger className="col-span-3">
-                      <SelectValue placeholder="Select a category" />
+                      <SelectValue placeholder="Select a supplier" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map(category => (
-                        <SelectItem key={category} value={category}>
-                          {category}
+                      <SelectItem value="">No supplier</SelectItem>
+                      {supplierData.map(supplier => (
+                        <SelectItem key={supplier.id} value={supplier.id}>
+                          {supplier.name}
                         </SelectItem>
                       ))}
-                      <SelectItem value="New">+ Add New Category</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
-                {newProduct.category === 'New' && (
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="newCategory" className="text-right">New Category</Label>
-                    <Input
-                      id="newCategory"
-                      value=""
-                      onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
-                      className="col-span-3"
-                      placeholder="Enter new category name"
-                    />
-                  </div>
-                )}
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="quantity" className="text-right">Quantity</Label>
                   <Input
                     id="quantity"
                     type="number"
+                    min="0"
                     value={newProduct.stockQuantity}
                     onChange={(e) => setNewProduct({...newProduct, stockQuantity: parseInt(e.target.value) || 0})}
                     className="col-span-3"
+                    placeholder="Initial stock quantity"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-start gap-4">
@@ -230,6 +327,18 @@ const InventoryPage: React.FC = () => {
                     value={newProduct.description}
                     onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
                     className="col-span-3"
+                    rows={4}
+                    placeholder="Product description"
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="image" className="text-right">Image URL</Label>
+                  <Input
+                    id="image"
+                    value={newProduct.image}
+                    onChange={(e) => setNewProduct({...newProduct, image: e.target.value})}
+                    className="col-span-3"
+                    placeholder="Image URL (leave empty for random image)"
                   />
                 </div>
               </div>

@@ -15,6 +15,7 @@ const InventoryPage = lazy(() => import('./pages/InventoryPage'));
 const ReportsPage = lazy(() => import('./pages/ReportsPage'));
 const CustomersPage = lazy(() => import('./pages/CustomersPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const SuppliersPage = lazy(() => import('./pages/SuppliersPage'));
 
 // Loading fallback component for lazy-loaded routes
 const LoadingFallback = () => (
@@ -55,6 +56,14 @@ const App = () => (
             element={
               <Suspense fallback={<LoadingFallback />}>
                 <CustomersPage />
+              </Suspense>
+            } 
+          />
+          <Route 
+            path="/suppliers" 
+            element={
+              <Suspense fallback={<LoadingFallback />}>
+                <SuppliersPage />
               </Suspense>
             } 
           />

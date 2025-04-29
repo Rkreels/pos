@@ -11,7 +11,8 @@ import {
   Menu,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Truck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -119,6 +120,13 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             title="Inventory" 
             isSidebarExpanded={isSidebarExpanded} 
             speakFunction={voiceAssistant.speakInventoryPage.bind(voiceAssistant)}
+          />
+          <NavItem 
+            to="/suppliers" 
+            icon={Truck} 
+            title="Suppliers" 
+            isSidebarExpanded={isSidebarExpanded} 
+            speakFunction={voiceAssistant.speakSupplierManagement.bind(voiceAssistant)}
           />
           <NavItem 
             to="/reports" 
