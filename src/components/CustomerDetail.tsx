@@ -63,6 +63,22 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ customer, onBack
     alert(`Exporting purchase history for ${customer.name}`);
   };
 
+  // Helper function to determine most frequent payment method
+  const getMostFrequentPayment = () => {
+    if (transactions.length === 0) return 'N/A';
+    
+    const counts: Record<string, number> = {};
+    transactions.forEach(tx => {
+      counts[tx.paymentMethod] = (counts[tx.paymentMethod] || 0) + 1;
+    });
+    
+    // Find the payment method with the highest count
+    const mostFrequent = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])[0];
+    
+    return `${mostFrequent[0]} (${mostFrequent[1]}x)`;
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -151,12 +167,7 @@ export const CustomerDetail: React.FC<CustomerDetailProps> = ({ customer, onBack
               <div>
                 <p className="text-sm text-gray-500">Preferred Payment</p>
                 <p className="font-semibold">
-                  {transactions.length > 0 
-                    ? transactions.reduce((acc, tx) => {
-                        acc[tx.paymentMethod] = (acc[tx.paymentMethod] || 0) + 1;
-                        return acc;
-                      }, {} as Record<string, number>)
-                    : 'N/A'}
+                  {getMostFrequentPayment()}
                 </p>
               </div>
             </div>

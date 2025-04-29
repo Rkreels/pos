@@ -24,62 +24,65 @@ const LoadingFallback = () => (
   </div>
 );
 
+// Create a new QueryClient instance
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
+const App = () => {
+  return (
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/pos" element={<POSPage />} />
-          <Route 
-            path="/inventory" 
-            element={
-              <Suspense fallback={<LoadingFallback />}>
-                <InventoryPage />
-              </Suspense>
-            } 
-          />
-          <Route 
-            path="/reports" 
-            element={
-              <Suspense fallback={<LoadingFallback />}>
-                <ReportsPage />
-              </Suspense>
-            } 
-          />
-          <Route 
-            path="/customers" 
-            element={
-              <Suspense fallback={<LoadingFallback />}>
-                <CustomersPage />
-              </Suspense>
-            } 
-          />
-          <Route 
-            path="/suppliers" 
-            element={
-              <Suspense fallback={<LoadingFallback />}>
-                <SuppliersPage />
-              </Suspense>
-            } 
-          />
-          <Route 
-            path="/settings" 
-            element={
-              <Suspense fallback={<LoadingFallback />}>
-                <SettingsPage />
-              </Suspense>
-            } 
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/pos" element={<POSPage />} />
+            <Route 
+              path="/inventory" 
+              element={
+                <Suspense fallback={<LoadingFallback />}>
+                  <InventoryPage />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/reports" 
+              element={
+                <Suspense fallback={<LoadingFallback />}>
+                  <ReportsPage />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/customers" 
+              element={
+                <Suspense fallback={<LoadingFallback />}>
+                  <CustomersPage />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/suppliers" 
+              element={
+                <Suspense fallback={<LoadingFallback />}>
+                  <SuppliersPage />
+                </Suspense>
+              } 
+            />
+            <Route 
+              path="/settings" 
+              element={
+                <Suspense fallback={<LoadingFallback />}>
+                  <SettingsPage />
+                </Suspense>
+              } 
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TooltipProvider>
       </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+};
 
 export default App;
