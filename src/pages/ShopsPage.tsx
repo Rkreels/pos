@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { MainNavigation } from '@/components/MainNavigation';
 import { useShop } from '@/context/ShopContext';
@@ -30,6 +29,7 @@ import { Search, Plus, Edit, Trash, Store } from 'lucide-react';
 import { toast } from 'sonner';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 const ShopsPage: React.FC = () => {
   const { shops, refreshShops, currentShop, setCurrentShop } = useShop();

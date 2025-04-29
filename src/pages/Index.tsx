@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { Product, SalesData } from '@/types';
+import { Product, SalesData, User } from '@/types';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { MainNavigation } from '@/components/MainNavigation';
 import { Dashboard } from '@/components/Dashboard';
+import MasterManagerDashboard from '@/components/MasterManagerDashboard';
 import { productData } from '@/data/products';
 import { useShop } from '@/context/ShopContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,6 +34,17 @@ const sampleRecentActivity = [
   { id: '4', action: 'Daily sales report generated', time: '2 hours ago' },
 ];
 
+// Mock current user - In a real application, this would come from an auth context
+const currentUser: User = {
+  id: '5',
+  name: 'Mark Master',
+  email: 'mark@example.com',
+  role: 'master',
+  status: 'active',
+  lastLogin: '2025-04-29 08:00',
+  managedShops: ['1', '2', '3']
+};
+
 const Index = () => {
   const [products, setProducts] = useState<Product[]>(productData);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -44,7 +56,11 @@ const Index = () => {
     
     // Speak page overview when the page loads
     const timer = setTimeout(() => {
-      voiceAssistant.speakPageOverview();
+      if (currentUser.role === 'master') {
+        voiceAssistant.speak("Welcome to the Master Manager Dashboard. Here you can oversee all shops under your management. You can compare performance metrics, view shop statuses, and access individual shop data.");
+      } else {
+        voiceAssistant.speakPageOverview();
+      }
     }, 800);
     
     return () => {
@@ -53,6 +69,9 @@ const Index = () => {
     };
   }, []);
 
+  // Determine whether to show master dashboard or regular dashboard
+  const showMasterDashboard = currentUser.role === 'master' && currentUser.managedShops && currentUser.managedShops.length > 0;
+
   return (
     <div className="flex h-screen bg-gray-50">
       <MainNavigation isCollapsed={sidebarCollapsed} toggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)} />
@@ -60,8 +79,10 @@ const Index = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm py-4 px-6">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-800">Dashboard</h1>
-            {currentShop && (
+            <h1 className="text-2xl font-bold text-gray-800">
+              {showMasterDashboard ? 'Master Manager Dashboard' : 'Dashboard'}
+            </h1>
+            {currentShop && !showMasterDashboard && (
               <Card className="border-0 shadow-none bg-transparent">
                 <CardContent className="p-0 flex items-center">
                   <Store className="h-4 w-4 mr-2" />
@@ -75,23 +96,30 @@ const Index = () => {
         </header>
         
         <main className="flex-1 overflow-y-auto p-6">
-          {!currentShop ? (
-            <div className="flex flex-col items-center justify-center h-full">
-              <Store className="h-16 w-16 text-gray-400 mb-4" />
-              <h2 className="text-2xl font-bold text-gray-700 mb-2">No Shop Selected</h2>
-              <p className="text-gray-500 mb-4">Please select a shop from the sidebar to view dashboard data.</p>
-              <p className="text-gray-500">You can manage your shops by going to the Shops page.</p>
-            </div>
-          ) : (
-            <Dashboard 
-              totalSales={12458.99}
-              totalOrders={142}
-              totalCustomers={64}
-              totalProducts={products.length}
-              salesData={sampleSalesData}
-              topSellingProducts={sampleTopSellingProducts}
-              recentActivity={sampleRecentActivity}
+          {showMasterDashboard ? (
+            <MasterManagerDashboard 
+              userId={currentUser.id} 
+              managedShopIds={currentUser.managedShops || []} 
             />
+          ) : (
+            !currentShop ? (
+              <div className="flex flex-col items-center justify-center h-full">
+                <Store className="h-16 w-16 text-gray-400 mb-4" />
+                <h2 className="text-2xl font-bold text-gray-700 mb-2">No Shop Selected</h2>
+                <p className="text-gray-500 mb-4">Please select a shop from the sidebar to view dashboard data.</p>
+                <p className="text-gray-500">You can manage your shops by going to the Shops page.</p>
+              </div>
+            ) : (
+              <Dashboard 
+                totalSales={12458.99}
+                totalOrders={142}
+                totalCustomers={64}
+                totalProducts={products.length}
+                salesData={sampleSalesData}
+                topSellingProducts={sampleTopSellingProducts}
+                recentActivity={sampleRecentActivity}
+              />
+            )
           )}
         </main>
       </div>

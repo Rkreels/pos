@@ -1,9 +1,8 @@
-
 import React, { useEffect, useState } from 'react';
 import { MainNavigation } from '@/components/MainNavigation';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { UserManagement } from '@/components/settings/UserManagement';
+import UserManagement from '@/components/settings/UserManagement';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

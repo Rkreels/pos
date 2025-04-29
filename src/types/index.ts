@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -9,6 +10,12 @@ export interface Product {
   sku: string;
   cost: number;
   supplierId?: string;
+  barcode?: string; // Added for compatibility with Inventory.tsx
+}
+
+export interface CartItem {
+  product: Product;
+  quantity: number;
 }
 
 export interface SalesData {
@@ -47,14 +54,14 @@ export interface Supplier {
   products?: Product[];
 }
 
-// Update the User interface to include status as a string
 export interface User {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'manager' | 'cashier';
+  role: 'admin' | 'manager' | 'master' | 'cashier'; // Added 'master' role
   status: 'active' | 'inactive';
   lastLogin?: string;
+  managedShops?: string[]; // IDs of shops the master manager manages
 }
 
 // Add Shop interface for multi-tenant support
@@ -68,6 +75,7 @@ export interface Shop {
   ownerId: string;
   status: 'active' | 'inactive';
   createdAt: Date;
+  managers?: string[]; // IDs of managers for this shop
 }
 
 // Add Organization interface for SaaS model

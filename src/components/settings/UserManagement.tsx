@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { User } from '@/types';
+import { User, Shop } from '@/types';
 import { Button } from '@/components/ui/button';
 import { 
   Table, 
@@ -31,8 +31,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Search, UserPlus, Edit, Trash, Eye } from 'lucide-react';
+import { Search, UserPlus, Edit, Trash, Store } from 'lucide-react';
 import { toast } from 'sonner';
+import { useShop } from '@/context/ShopContext';
+import { Checkbox } from '@/components/ui/checkbox';
 
 // Sample user data
 const sampleUsers: User[] = [
@@ -67,6 +69,15 @@ const sampleUsers: User[] = [
     role: 'cashier',
     status: 'inactive',
     lastLogin: '2025-03-15 11:30'
+  },
+  {
+    id: '5',
+    name: 'Mark Master',
+    email: 'mark@example.com',
+    role: 'master',
+    status: 'active',
+    lastLogin: '2025-04-29 08:00',
+    managedShops: ['1', '2']
   }
 ];
 
@@ -75,6 +86,7 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isShopAssignDialogOpen, setIsShopAssignDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [newUser, setNewUser] = useState<User>({
     id: '',
@@ -83,6 +95,8 @@ const UserManagement = () => {
     role: 'cashier',
     status: 'active'
   });
+  const { shops } = useShop();
+  const [selectedShops, setSelectedShops] = useState<string[]>([]);
 
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -148,6 +162,32 @@ const UserManagement = () => {
     toast.success(`User ${user.name} ${newStatus === 'active' ? 'activated' : 'deactivated'}`);
   };
 
+  const openShopAssignDialog = (user: User) => {
+    setSelectedUser(user);
+    setSelectedShops(user.managedShops || []);
+    setIsShopAssignDialogOpen(true);
+  };
+
+  const handleAssignShops = () => {
+    if (selectedUser) {
+      setUsers(users.map(user => 
+        user.id === selectedUser.id 
+          ? { ...user, managedShops: selectedShops } 
+          : user
+      ));
+      toast.success(`Shops assigned to ${selectedUser.name} successfully`);
+      setIsShopAssignDialogOpen(false);
+    }
+  };
+
+  const toggleShopSelection = (shopId: string) => {
+    setSelectedShops(
+      selectedShops.includes(shopId)
+        ? selectedShops.filter(id => id !== shopId)
+        : [...selectedShops, shopId]
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -194,9 +234,11 @@ const UserManagement = () => {
                     <Badge variant={
                       user.role === 'admin' 
                         ? 'default' 
-                        : user.role === 'manager' 
-                          ? 'outline' 
-                          : 'secondary'
+                        : user.role === 'master'
+                          ? 'destructive'
+                          : user.role === 'manager' 
+                            ? 'outline' 
+                            : 'secondary'
                     }>
                       {user.role}
                     </Badge>
@@ -209,6 +251,15 @@ const UserManagement = () => {
                   <TableCell>{user.lastLogin || 'Never'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      {user.role === 'master' && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => openShopAssignDialog(user)}
+                        >
+                          <Store className="h-4 w-4 mr-2" /> Manage Shops
+                        </Button>
+                      )}
                       <Button 
                         variant={user.status === 'active' ? 'outline' : 'outline'} 
                         size="sm" 
@@ -278,11 +329,12 @@ const UserManagement = () => {
                 value={newUser.role}
                 onChange={(e) => setNewUser({
                   ...newUser, 
-                  role: e.target.value as 'admin' | 'manager' | 'cashier'
+                  role: e.target.value as 'admin' | 'manager' | 'master' | 'cashier'
                 })}
                 className="col-span-3 p-2 border rounded"
               >
                 <option value="admin">Admin</option>
+                <option value="master">Master Manager</option>
                 <option value="manager">Manager</option>
                 <option value="cashier">Cashier</option>
               </select>
@@ -309,6 +361,46 @@ const UserManagement = () => {
             </Button>
             <Button type="button" onClick={handleSaveUser}>
               {selectedUser ? 'Update' : 'Add'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Shops Assignment Dialog for Master Managers */}
+      <Dialog open={isShopAssignDialogOpen} onOpenChange={setIsShopAssignDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Assign Shops to {selectedUser?.name}</DialogTitle>
+            <DialogDescription>
+              Select the shops this master manager will oversee
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4 max-h-[400px] overflow-y-auto">
+            {shops.map((shop) => (
+              <div key={shop.id} className="flex items-center space-x-2 p-2 border rounded">
+                <Checkbox 
+                  id={`shop-${shop.id}`}
+                  checked={selectedShops.includes(shop.id)}
+                  onCheckedChange={() => toggleShopSelection(shop.id)}
+                />
+                <div className="flex-1">
+                  <Label htmlFor={`shop-${shop.id}`} className="font-medium cursor-pointer">
+                    {shop.name}
+                  </Label>
+                  <p className="text-sm text-gray-500">{shop.address}</p>
+                </div>
+                <Badge variant={shop.status === 'active' ? 'default' : 'secondary'}>
+                  {shop.status}
+                </Badge>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setIsShopAssignDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={handleAssignShops}>
+              Save Assignments
             </Button>
           </DialogFooter>
         </DialogContent>
