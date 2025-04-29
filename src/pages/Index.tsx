@@ -35,10 +35,13 @@ const Index = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   useEffect(() => {
+    // Clear any previous speech and start new explanation after a slight delay
+    voiceAssistant.stopSpeaking();
+    
     // Speak page overview when the page loads
     const timer = setTimeout(() => {
       voiceAssistant.speakPageOverview();
-    }, 500);
+    }, 800);
     
     return () => {
       clearTimeout(timer);

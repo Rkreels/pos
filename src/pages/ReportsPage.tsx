@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { MainNavigation } from '@/components/MainNavigation';
 import { voiceAssistant } from '@/services/VoiceAssistant';
@@ -24,9 +25,80 @@ const ReportsPage: React.FC = () => {
     };
   }, []);
 
+  // Function to convert data to CSV format
+  const convertToCSV = (data: any[]): string => {
+    const header = Object.keys(data[0]).join(',');
+    const rows = data.map(row => {
+      return Object.values(row).map(value => {
+        if (typeof value === 'string' && value.includes(',')) {
+          return `"${value}"`;
+        }
+        return value;
+      }).join(',');
+    });
+    
+    return [header, ...rows].join('\n');
+  };
+
+  // Sample data for each report type
+  const getSampleData = () => {
+    if (activeTab === "daily") {
+      return [
+        { date: '2025-04-29', sales: 1250.50, transactions: 25, averageOrder: 50.02 },
+        { date: '2025-04-28', sales: 1120.75, transactions: 22, averageOrder: 50.94 },
+        { date: '2025-04-27', sales: 1350.25, transactions: 28, averageOrder: 48.22 }
+      ];
+    } else if (activeTab === "weekly") {
+      return [
+        { week: 'Week 18', startDate: '2025-04-27', endDate: '2025-05-03', sales: 8250.50, transactions: 165 },
+        { week: 'Week 17', startDate: '2025-04-20', endDate: '2025-04-26', sales: 7990.25, transactions: 158 },
+        { week: 'Week 16', startDate: '2025-04-13', endDate: '2025-04-19', sales: 8120.75, transactions: 160 }
+      ];
+    } else if (activeTab === "monthly") {
+      return [
+        { month: 'April 2025', sales: 32500.50, transactions: 645, topCategory: 'Electronics' },
+        { month: 'March 2025', sales: 30750.25, transactions: 610, topCategory: 'Home Goods' },
+        { month: 'February 2025', sales: 28900.75, transactions: 580, topCategory: 'Electronics' }
+      ];
+    } else {
+      return [
+        { year: '2025', sales: 120500.50, transactions: 2405, growth: '8.5%' },
+        { year: '2024', sales: 111050.25, transactions: 2210, growth: '7.2%' },
+        { year: '2023', sales: 103590.75, transactions: 2080, growth: '6.1%' }
+      ];
+    }
+  };
+
   const handleExportReport = () => {
     voiceAssistant.speakExportReport();
-    toast.success(`Exporting ${activeTab} report as CSV file`);
+    
+    try {
+      // Get data based on active tab
+      const data = getSampleData();
+      
+      // Convert to CSV
+      const csvContent = convertToCSV(data);
+      
+      // Create blob and download link
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      
+      // Set filename based on report type
+      let filename = `sales_report_${activeTab}_${new Date().toISOString().slice(0, 10)}.csv`;
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success(`${activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} report downloaded successfully`);
+    } catch (error) {
+      console.error('Error exporting report:', error);
+      toast.error('Failed to export report. Please try again.');
+    }
   };
 
   const handleTabChange = (value: string) => {

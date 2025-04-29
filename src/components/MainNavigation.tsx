@@ -37,9 +37,12 @@ const NavItem: React.FC<NavItemProps> = ({
   const isActive = location.pathname === to;
 
   const handleLinkClick = () => {
-    if (speakFunction) {
-      speakFunction();
-    }
+    // Add a small delay to ensure the page transition happens first
+    setTimeout(() => {
+      if (speakFunction) {
+        speakFunction();
+      }
+    }, 800);
   };
 
   return (
@@ -107,47 +110,49 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             icon={LayoutDashboard} 
             title="Dashboard" 
             isSidebarExpanded={isSidebarExpanded} 
+            speakFunction={() => voiceAssistant.speakPageOverview()}
           />
           <NavItem 
             to="/pos" 
             icon={ShoppingCart} 
             title="Point of Sale" 
             isSidebarExpanded={isSidebarExpanded}
+            speakFunction={() => voiceAssistant.speakPageOverview()}
           />
           <NavItem 
             to="/inventory" 
             icon={Package} 
             title="Inventory" 
             isSidebarExpanded={isSidebarExpanded} 
-            speakFunction={voiceAssistant.speakInventoryPage.bind(voiceAssistant)}
+            speakFunction={() => voiceAssistant.speakInventoryPage()}
           />
           <NavItem 
             to="/suppliers" 
             icon={Truck} 
             title="Suppliers" 
             isSidebarExpanded={isSidebarExpanded} 
-            speakFunction={voiceAssistant.speakSupplierManagement.bind(voiceAssistant)}
+            speakFunction={() => voiceAssistant.speakSupplierManagement()}
           />
           <NavItem 
             to="/reports" 
             icon={BarChart} 
             title="Sales Reports" 
             isSidebarExpanded={isSidebarExpanded}
-            speakFunction={voiceAssistant.speakSalesReportPage.bind(voiceAssistant)}
+            speakFunction={() => voiceAssistant.speakSalesReportPage()}
           />
           <NavItem 
             to="/customers" 
             icon={Users} 
             title="Customers" 
             isSidebarExpanded={isSidebarExpanded}
-            speakFunction={voiceAssistant.speakCustomersPage.bind(voiceAssistant)}
+            speakFunction={() => voiceAssistant.speakCustomersPage()}
           />
           <NavItem 
             to="/settings" 
             icon={Settings} 
             title="Settings" 
             isSidebarExpanded={isSidebarExpanded}
-            speakFunction={voiceAssistant.speakSettingsPage.bind(voiceAssistant)}
+            speakFunction={() => voiceAssistant.speakSettingsPage()}
           />
         </div>
       </div>

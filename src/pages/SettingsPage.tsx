@@ -2,32 +2,52 @@
 import React, { useEffect, useState } from 'react';
 import { MainNavigation } from '@/components/MainNavigation';
 import { voiceAssistant } from '@/services/VoiceAssistant';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
+import { UserManagement } from '@/components/settings/UserManagement';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 
 const SettingsPage: React.FC = () => {
-  // General settings
-  const [storeName, setStoreName] = useState('My POS Store');
-  const [storeAddress, setStoreAddress] = useState('123 Main St, Anytown, CA 12345');
-  const [taxRate, setTaxRate] = useState(10);
-  const [currencySymbol, setCurrencySymbol] = useState('$');
-  
-  // Receipt settings
-  const [showLogo, setShowLogo] = useState(true);
-  const [showTaxDetails, setShowTaxDetails] = useState(true);
-  const [thankYouMessage, setThankYouMessage] = useState('Thank you for your purchase!');
-  const [printAutomatically, setPrintAutomatically] = useState(false);
-  
-  // Voice assistant settings
+  const [activeTab, setActiveTab] = useState("users");
   const [voiceEnabled, setVoiceEnabled] = useState(true);
-  const [voiceVolume, setVoiceVolume] = useState([80]);
-  const [voiceSpeed, setVoiceSpeed] = useState([100]);
+  
+  // Sample business settings
+  const [businessSettings, setBusinessSettings] = useState({
+    businessName: "My Store POS",
+    address: "123 Main Street, Anytown, CA 12345",
+    phone: "(555) 123-4567",
+    email: "contact@mystorepos.com",
+    taxRate: "7.25%",
+    currency: "USD"
+  });
+  
+  const updateBusinessSettings = (key: string, value: string) => {
+    setBusinessSettings(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
+  
+  const handleSaveBusinessSettings = () => {
+    toast.success("Business settings saved successfully");
+    voiceAssistant.speak("Your business settings have been updated and saved.");
+  };
+  
+  const toggleVoiceAssistant = () => {
+    setVoiceEnabled(!voiceEnabled);
+    if (!voiceEnabled) {
+      toast.success("Voice assistant enabled");
+      voiceAssistant.speak("Voice assistant has been enabled. I'm here to help you navigate the system.");
+    } else {
+      toast.success("Voice assistant disabled");
+      voiceAssistant.stopSpeaking();
+    }
+  };
   
   useEffect(() => {
     // Speak page overview when the page loads
@@ -40,202 +60,150 @@ const SettingsPage: React.FC = () => {
       voiceAssistant.stopSpeaking();
     };
   }, []);
-
-  const handleSaveSettings = () => {
-    toast.success("Settings saved successfully");
-    voiceAssistant.speak("Your settings have been saved successfully.");
-  };
-
+  
   return (
     <div className="flex h-screen bg-gray-50">
       <MainNavigation />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm py-4 px-6">
-          <h1 className="text-2xl font-bold text-gray-800">Settings</h1>
+          <h1 className="text-2xl font-bold text-gray-800">System Settings</h1>
         </header>
         
         <main className="flex-1 overflow-y-auto p-6">
-          <Tabs defaultValue="general" className="space-y-4">
-            <TabsList>
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="receipt">Receipt</TabsTrigger>
-              <TabsTrigger value="voice">Voice Assistant</TabsTrigger>
-              <TabsTrigger value="users">User Management</TabsTrigger>
+          <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-6">
+              <TabsTrigger value="users">Users</TabsTrigger>
+              <TabsTrigger value="business">Business</TabsTrigger>
+              <TabsTrigger value="system">System Preferences</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="general">
+            <TabsContent value="users" className="space-y-6">
+              <UserManagement />
+            </TabsContent>
+            
+            <TabsContent value="business" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>General Settings</CardTitle>
+                  <CardTitle>Business Information</CardTitle>
+                  <CardDescription>
+                    Configure your business details for receipts and reports
+                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="store-name">Store Name</Label>
-                    <Input 
-                      id="store-name" 
-                      value={storeName} 
-                      onChange={(e) => setStoreName(e.target.value)} 
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="store-address">Store Address</Label>
-                    <Input 
-                      id="store-address" 
-                      value={storeAddress} 
-                      onChange={(e) => setStoreAddress(e.target.value)} 
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="tax-rate">Tax Rate (%)</Label>
+                      <Label htmlFor="businessName">Business Name</Label>
                       <Input 
-                        id="tax-rate" 
-                        type="number" 
-                        min="0" 
-                        max="100" 
-                        value={taxRate} 
-                        onChange={(e) => setTaxRate(Number(e.target.value))} 
+                        id="businessName" 
+                        value={businessSettings.businessName}
+                        onChange={(e) => updateBusinessSettings('businessName', e.target.value)}
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="currency-symbol">Currency Symbol</Label>
+                      <Label htmlFor="email">Email</Label>
                       <Input 
-                        id="currency-symbol" 
-                        value={currencySymbol} 
-                        onChange={(e) => setCurrencySymbol(e.target.value)} 
+                        id="email" 
+                        type="email" 
+                        value={businessSettings.email}
+                        onChange={(e) => updateBusinessSettings('email', e.target.value)}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input 
+                        id="phone" 
+                        value={businessSettings.phone}
+                        onChange={(e) => updateBusinessSettings('phone', e.target.value)}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="address">Address</Label>
+                      <Input 
+                        id="address" 
+                        value={businessSettings.address}
+                        onChange={(e) => updateBusinessSettings('address', e.target.value)}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="taxRate">Default Tax Rate</Label>
+                      <Input 
+                        id="taxRate" 
+                        value={businessSettings.taxRate}
+                        onChange={(e) => updateBusinessSettings('taxRate', e.target.value)}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="currency">Currency</Label>
+                      <Input 
+                        id="currency" 
+                        value={businessSettings.currency}
+                        onChange={(e) => updateBusinessSettings('currency', e.target.value)}
                       />
                     </div>
                   </div>
                   
-                  <Button onClick={handleSaveSettings} className="mt-6">Save Settings</Button>
+                  <Separator className="my-4" />
+                  
+                  <div className="flex justify-end">
+                    <Button onClick={handleSaveBusinessSettings}>Save Changes</Button>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
             
-            <TabsContent value="receipt">
+            <TabsContent value="system" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Receipt Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="show-logo">Show Logo on Receipt</Label>
-                    <Switch 
-                      id="show-logo"
-                      checked={showLogo}
-                      onCheckedChange={setShowLogo}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="show-tax-details">Show Tax Details</Label>
-                    <Switch 
-                      id="show-tax-details"
-                      checked={showTaxDetails}
-                      onCheckedChange={setShowTaxDetails}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="thank-you-message">Thank You Message</Label>
-                    <Input 
-                      id="thank-you-message" 
-                      value={thankYouMessage} 
-                      onChange={(e) => setThankYouMessage(e.target.value)} 
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="print-automatically">Print Receipt Automatically</Label>
-                    <Switch 
-                      id="print-automatically"
-                      checked={printAutomatically}
-                      onCheckedChange={setPrintAutomatically}
-                    />
-                  </div>
-                  
-                  <Button onClick={handleSaveSettings} className="mt-6">Save Settings</Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="voice">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Voice Assistant Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="voice-enabled">Enable Voice Assistant</Label>
-                    <Switch 
-                      id="voice-enabled"
-                      checked={voiceEnabled}
-                      onCheckedChange={setVoiceEnabled}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="voice-volume">Voice Volume</Label>
-                      <span>{voiceVolume[0]}%</span>
-                    </div>
-                    <Slider
-                      id="voice-volume"
-                      min={0}
-                      max={100}
-                      step={1}
-                      value={voiceVolume}
-                      onValueChange={setVoiceVolume}
-                      disabled={!voiceEnabled}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="voice-speed">Voice Speed</Label>
-                      <span>{voiceSpeed[0]}%</span>
-                    </div>
-                    <Slider
-                      id="voice-speed"
-                      min={50}
-                      max={150}
-                      step={5}
-                      value={voiceSpeed}
-                      onValueChange={setVoiceSpeed}
-                      disabled={!voiceEnabled}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="test-voice">Test Voice Assistant</Label>
-                    <Button 
-                      id="test-voice" 
-                      variant="outline" 
-                      onClick={() => voiceAssistant.speak("Hello! This is a test of the voice assistant.")}
-                      disabled={!voiceEnabled}
-                      className="w-full"
-                    >
-                      Play Test Message
-                    </Button>
-                  </div>
-                  
-                  <Button onClick={handleSaveSettings} className="mt-6">Save Settings</Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="users">
-              <Card>
-                <CardHeader>
-                  <CardTitle>User Management</CardTitle>
+                  <CardTitle>System Preferences</CardTitle>
+                  <CardDescription>
+                    Configure application behavior and preferences
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-8 text-gray-500">
-                    User management functionality will be available in the next update.
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium">Voice Assistant</h3>
+                        <p className="text-sm text-gray-500">Enable or disable the voice guidance system</p>
+                      </div>
+                      <Switch checked={voiceEnabled} onCheckedChange={toggleVoiceAssistant} />
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium">Automatic Logout</h3>
+                        <p className="text-sm text-gray-500">Log out after 30 minutes of inactivity</p>
+                      </div>
+                      <Switch defaultChecked={true} />
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium">Receipt Printing</h3>
+                        <p className="text-sm text-gray-500">Automatically print receipt after transaction</p>
+                      </div>
+                      <Switch defaultChecked={true} />
+                    </div>
+                    
+                    <Separator />
+                    
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium">Dark Mode</h3>
+                        <p className="text-sm text-gray-500">Switch between light and dark interface</p>
+                      </div>
+                      <Switch defaultChecked={false} />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
