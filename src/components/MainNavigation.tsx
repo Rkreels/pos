@@ -13,13 +13,16 @@ import {
   ChevronLeft,
   ChevronRight,
   Truck,
-  Building
+  Building,
+  LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { ShopSelector } from '@/components/ShopSelector';
 import { useShop } from '@/context/ShopContext';
+import { useAuth } from '@/context/AuthContext';
+import { RoleSelector } from './RoleSelector';
 
 interface NavItemProps {
   to: string;
@@ -27,6 +30,7 @@ interface NavItemProps {
   title: string;
   isSidebarExpanded: boolean;
   speakFunction?: () => void;
+  isVisible: boolean;
 }
 
 const NavItem: React.FC<NavItemProps> = ({ 
@@ -34,10 +38,13 @@ const NavItem: React.FC<NavItemProps> = ({
   icon: Icon, 
   title, 
   isSidebarExpanded,
-  speakFunction
+  speakFunction,
+  isVisible
 }) => {
   const location = useLocation();
   const isActive = location.pathname === to;
+
+  if (!isVisible) return null;
 
   const handleLinkClick = () => {
     // Add a small delay to ensure the page transition happens first
@@ -74,6 +81,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
 }) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(!isCollapsed);
   const { currentShop } = useShop();
+  const { checkRouteAccess, logout, currentUser } = useAuth();
   
   React.useEffect(() => {
     setIsSidebarExpanded(!isCollapsed);
@@ -111,6 +119,9 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
         {isSidebarExpanded && (
           <div className="mb-4">
             <ShopSelector />
+            <div className="mt-2">
+              <RoleSelector />
+            </div>
           </div>
         )}
         
@@ -121,6 +132,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             title="Dashboard" 
             isSidebarExpanded={isSidebarExpanded} 
             speakFunction={() => voiceAssistant.speakPageOverview()}
+            isVisible={true} // Everyone can see dashboard
           />
           <NavItem 
             to="/pos" 
@@ -128,6 +140,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             title="Point of Sale" 
             isSidebarExpanded={isSidebarExpanded}
             speakFunction={() => voiceAssistant.speakPageOverview()}
+            isVisible={checkRouteAccess('/pos')}
           />
           <NavItem 
             to="/inventory" 
@@ -135,6 +148,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             title="Inventory" 
             isSidebarExpanded={isSidebarExpanded} 
             speakFunction={() => voiceAssistant.speakInventoryPage()}
+            isVisible={checkRouteAccess('/inventory')}
           />
           <NavItem 
             to="/suppliers" 
@@ -142,6 +156,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             title="Suppliers" 
             isSidebarExpanded={isSidebarExpanded} 
             speakFunction={() => voiceAssistant.speakSupplierManagement()}
+            isVisible={checkRouteAccess('/suppliers')}
           />
           <NavItem 
             to="/reports" 
@@ -149,6 +164,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             title="Sales Reports" 
             isSidebarExpanded={isSidebarExpanded}
             speakFunction={() => voiceAssistant.speakSalesReportPage()}
+            isVisible={checkRouteAccess('/reports')}
           />
           <NavItem 
             to="/customers" 
@@ -156,6 +172,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             title="Customers" 
             isSidebarExpanded={isSidebarExpanded}
             speakFunction={() => voiceAssistant.speakCustomersPage()}
+            isVisible={checkRouteAccess('/customers')}
           />
           <NavItem 
             to="/shops" 
@@ -163,6 +180,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             title="Shops" 
             isSidebarExpanded={isSidebarExpanded}
             speakFunction={() => voiceAssistant.speakShopManagement()}
+            isVisible={checkRouteAccess('/shops')}
           />
           <NavItem 
             to="/settings" 
@@ -170,8 +188,27 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             title="Settings" 
             isSidebarExpanded={isSidebarExpanded}
             speakFunction={() => voiceAssistant.speakSettingsPage()}
+            isVisible={checkRouteAccess('/settings')}
           />
         </div>
+        
+        {isSidebarExpanded && (
+          <div className="absolute bottom-4 left-4 right-4">
+            <Button 
+              variant="ghost" 
+              className="w-full flex items-center justify-start text-red-500" 
+              onClick={logout}
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+            
+            <div className="mt-2 text-xs text-gray-500 flex items-center">
+              <span className="mr-1">Logged in as:</span>
+              <span className="font-medium">{currentUser.name}</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

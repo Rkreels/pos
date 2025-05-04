@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -43,7 +44,7 @@ export interface CustomerTransaction {
   paymentMethod: string;
 }
 
-// Adding ProductReference to fix supplier products array issues
+// Define the product reference type that can be either a string ID or a Product object
 export type ProductReference = string | Product;
 
 export interface Supplier {
@@ -64,6 +65,7 @@ export interface User {
   status: 'active' | 'inactive';
   lastLogin?: string;
   managedShops?: string[]; // IDs of shops the master manager manages
+  permissions?: UserPermissions; // Added for detailed role permissions
 }
 
 // Add Shop interface for multi-tenant support
@@ -91,19 +93,6 @@ export interface Organization {
   ownerId: string;
 }
 
-// Adding ProductReference to fix supplier products array issues
-export type ProductReference = string | Product;
-
-export interface Supplier {
-  id: string;
-  name: string;
-  contactName: string;
-  email: string;
-  phone: string;
-  address: string;
-  products?: ProductReference[];
-}
-
 // Add ShopContext for multi-shop support
 export interface ShopContextType {
   currentShop: Shop | null;
@@ -122,4 +111,49 @@ export interface SimpleProduct {
   sku?: string;
   cost?: number;
   stockQuantity?: number;
+}
+
+// New interface for detailed permission control
+export interface UserPermissions {
+  inventory: {
+    view: boolean;
+    edit: boolean;
+    delete: boolean;
+  };
+  pos: {
+    access: boolean;
+    applyDiscounts: boolean;
+    voidTransactions: boolean;
+  };
+  customers: {
+    view: boolean;
+    edit: boolean;
+    delete: boolean;
+  };
+  reports: {
+    view: boolean;
+    export: boolean;
+  };
+  settings: {
+    view: boolean;
+    edit: boolean;
+  };
+  users: {
+    view: boolean;
+    create: boolean;
+    edit: boolean;
+    delete: boolean;
+  };
+  shops: {
+    view: boolean;
+    create: boolean;
+    edit: boolean;
+    delete: boolean;
+  };
+  suppliers: {
+    view: boolean;
+    create: boolean;
+    edit: boolean;
+    delete: boolean;
+  };
 }

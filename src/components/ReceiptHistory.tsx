@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Receipt } from './Receipt';
-import { CartItem } from '@/types';
+import { CartItem, Product } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
@@ -42,7 +41,8 @@ const sampleReceipts: SavedReceipt[] = [
           description: 'Freshly roasted arabica coffee beans',
           category: 'Beverages',
           sku: 'COF001',
-          cost: 10.50
+          cost: 10.50,
+          stockQuantity: 25 // Added missing required field
         },
         quantity: 2
       },
@@ -54,7 +54,8 @@ const sampleReceipts: SavedReceipt[] = [
           description: 'Insulated stainless steel water bottle',
           category: 'Accessories',
           sku: 'BOT006',
-          cost: 5.75
+          cost: 5.75,
+          stockQuantity: 50 // Added missing required field
         },
         quantity: 1
       }
@@ -81,7 +82,8 @@ const sampleReceipts: SavedReceipt[] = [
           description: 'Monitor your activities and health metrics',
           category: 'Electronics',
           sku: 'FIT003',
-          cost: 25.00
+          cost: 25.00,
+          stockQuantity: 15 // Added missing required field
         },
         quantity: 1
       }
@@ -112,7 +114,8 @@ const sampleReceipts: SavedReceipt[] = [
           description: 'RGB backlit mechanical gaming keyboard',
           category: 'Electronics',
           sku: 'KEY009',
-          cost: 45.50
+          cost: 45.50,
+          stockQuantity: 10 // Added missing required field
         },
         quantity: 1
       },
@@ -124,7 +127,8 @@ const sampleReceipts: SavedReceipt[] = [
           description: '20,000mAh fast-charging power bank',
           category: 'Electronics',
           sku: 'CHR005',
-          cost: 18.50
+          cost: 18.50,
+          stockQuantity: 20 // Added missing required field
         },
         quantity: 2
       },
@@ -136,7 +140,8 @@ const sampleReceipts: SavedReceipt[] = [
           description: 'Shock-absorbing phone case for iPhone 14',
           category: 'Electronics',
           sku: 'CSE017',
-          cost: 5.50
+          cost: 5.50,
+          stockQuantity: 30 // Added missing required field
         },
         quantity: 1
       }

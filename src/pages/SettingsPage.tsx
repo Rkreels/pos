@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { MainNavigation } from '@/components/MainNavigation';
 import { voiceAssistant } from '@/services/VoiceAssistant';
@@ -10,10 +11,13 @@ import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { RolePermissions } from '@/components/settings/RolePermissions';
+import { useAuth } from '@/context/AuthContext';
 
 const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("users");
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const { currentUser, hasPermission } = useAuth();
   
   // Sample business settings
   const [businessSettings, setBusinessSettings] = useState({
@@ -74,11 +78,28 @@ const SettingsPage: React.FC = () => {
             <TabsList className="mb-6">
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="business">Business</TabsTrigger>
+              <TabsTrigger value="permissions">Role Permissions</TabsTrigger>
               <TabsTrigger value="system">System Preferences</TabsTrigger>
             </TabsList>
             
             <TabsContent value="users" className="space-y-6">
-              <UserManagement />
+              {hasPermission('users', 'view') ? (
+                <UserManagement />
+              ) : (
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                        <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+                        <path d="M7 10h10"></path>
+                        <path d="M7 14h10"></path>
+                      </svg>
+                      <h3 className="text-xl font-semibold mb-2">Access Restricted</h3>
+                      <p className="text-center">You don't have permission to view or manage users.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
             
             <TabsContent value="business" className="space-y-6">
@@ -154,6 +175,25 @@ const SettingsPage: React.FC = () => {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+            
+            <TabsContent value="permissions" className="space-y-6">
+              {currentUser.role === 'admin' ? (
+                <RolePermissions />
+              ) : (
+                <Card>
+                  <CardContent className="pt-6">
+                    <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                      </svg>
+                      <h3 className="text-xl font-semibold mb-2">Admin Access Only</h3>
+                      <p className="text-center">Only administrators can manage role permissions.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
             
             <TabsContent value="system" className="space-y-6">
