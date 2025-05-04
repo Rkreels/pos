@@ -1,7 +1,4 @@
 
-// This is a read-only file that had type errors.
-// Since we can't modify the original, I'm creating a type-compatible wrapper:
-
 import React from 'react';
 import { SimpleProduct, Product } from '@/types'; 
 
@@ -16,5 +13,17 @@ export const convertToFullProduct = (simpleProduct: SimpleProduct): Product => {
   };
 };
 
-// Export the original CustomerDetail component
-export { CustomerDetail } from 'react-original-customer-detail';
+// Create a placeholder CustomerDetail component instead of importing from non-existent module
+export const CustomerDetail: React.FC<{customer: any}> = ({ customer }) => {
+  return (
+    <div className="p-4 border rounded-md">
+      <h2 className="text-xl font-bold mb-2">{customer?.name || 'Customer Details'}</h2>
+      <div className="space-y-2">
+        {customer?.email && <p>Email: {customer.email}</p>}
+        {customer?.phone && <p>Phone: {customer.phone}</p>}
+        {customer?.address && <p>Address: {customer.address}</p>}
+        {customer?.loyaltyPoints && <p>Loyalty Points: {customer.loyaltyPoints}</p>}
+      </div>
+    </div>
+  );
+};

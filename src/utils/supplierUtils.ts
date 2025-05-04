@@ -26,3 +26,11 @@ export const getProductName = (product: ProductReference): string => {
     return product.name;
   }
 };
+
+// Add function to find products by IDs
+export const findProductsByIds = (productIds: string[], allProducts: Product[]): Product[] => {
+  return productIds.map(id => {
+    const product = allProducts.find(p => p.id === id);
+    return product || null;
+  }).filter(Boolean) as Product[];
+};

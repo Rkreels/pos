@@ -2,11 +2,13 @@
 import React, { useState } from 'react';
 import { MainNavigation } from '@/components/MainNavigation';
 import { Inventory } from '@/components/Inventory';
+import { InventoryExchange } from '@/components/InventoryExchange';
 import { Product } from '@/types';
 import { toast } from 'sonner';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { productData } from '@/data/products';
 import { supplierData } from '@/data/suppliers';
+import { useShop } from '@/context/ShopContext'; // Import shop context
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +31,7 @@ const InventoryPage: React.FC = () => {
   });
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newCategory, setNewCategory] = useState('');
+  const { currentShop } = useShop(); // Get current shop
   
   React.useEffect(() => {
     // Speak page overview when the page loads
@@ -164,17 +167,33 @@ const InventoryPage: React.FC = () => {
       
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm py-4 px-6">
-          <h1 className="text-2xl font-bold text-gray-800">Inventory Management</h1>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Inventory Management
+            {currentShop && <span className="text-base font-normal ml-2">({currentShop.name})</span>}
+          </h1>
         </header>
         
         <main className="flex-1 overflow-y-auto p-6">
-          <Inventory 
-            products={products}
-            onUpdateStock={handleUpdateStock}
-            onAddProduct={handleAddProduct}
-            onEditProduct={handleEditProduct}
-            onDeleteProduct={handleDeleteProduct}
-          />
+          {currentShop ? (
+            <>
+              <InventoryExchange products={products} setProducts={setProducts} />
+              
+              <Inventory 
+                products={products}
+                onUpdateStock={handleUpdateStock}
+                onAddProduct={handleAddProduct}
+                onEditProduct={handleEditProduct}
+                onDeleteProduct={handleDeleteProduct}
+              />
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-64 border rounded-lg">
+              <p className="text-xl mb-4">Please select a shop to view inventory</p>
+              <Button variant="outline" onClick={() => toast.info("Please select a shop from the shop selector")}>
+                Select Shop
+              </Button>
+            </div>
+          )}
           
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogContent className="sm:max-w-[600px]">
