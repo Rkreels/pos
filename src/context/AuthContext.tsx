@@ -95,7 +95,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const hasPermission = (module: string, action: string) => {
-    // Fix: Use module as keyof UserPermissions instead of trying to use typeof with a function call
+    // Fix: Use module as keyof UserPermissions
     return rbac.hasPermission(
       currentUser, 
       module as keyof UserPermissions,

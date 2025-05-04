@@ -1,6 +1,8 @@
 
 import React from 'react';
-import { SimpleProduct, Product } from '@/types'; 
+import { SimpleProduct, Product, Customer } from '@/types'; 
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Edit } from 'lucide-react';
 
 // Helper function to convert SimpleProduct to Product
 export const convertToFullProduct = (simpleProduct: SimpleProduct): Product => {
@@ -13,11 +15,31 @@ export const convertToFullProduct = (simpleProduct: SimpleProduct): Product => {
   };
 };
 
-// Create a placeholder CustomerDetail component instead of importing from non-existent module
-export const CustomerDetail: React.FC<{customer: any}> = ({ customer }) => {
+// Updated CustomerDetail component with proper props
+export interface CustomerDetailProps {
+  customer: Customer;
+  onBack?: () => void;
+  onEdit?: (customer: Customer) => void;
+}
+
+export const CustomerDetail: React.FC<CustomerDetailProps> = ({ customer, onBack, onEdit }) => {
   return (
     <div className="p-4 border rounded-md">
-      <h2 className="text-xl font-bold mb-2">{customer?.name || 'Customer Details'}</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">{customer?.name || 'Customer Details'}</h2>
+        <div className="flex gap-2">
+          {onBack && (
+            <Button variant="outline" size="sm" onClick={onBack}>
+              <ArrowLeft className="h-4 w-4 mr-1" /> Back
+            </Button>
+          )}
+          {onEdit && (
+            <Button size="sm" onClick={() => onEdit(customer)}>
+              <Edit className="h-4 w-4 mr-1" /> Edit
+            </Button>
+          )}
+        </div>
+      </div>
       <div className="space-y-2">
         {customer?.email && <p>Email: {customer.email}</p>}
         {customer?.phone && <p>Phone: {customer.phone}</p>}
