@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -45,7 +44,10 @@ export interface CustomerTransaction {
 }
 
 // Define the product reference type that can be either a string ID or a Product object
-export type ProductReference = string | Product;
+export type ProductReference = {
+  id: string;
+  name: string;
+};
 
 export interface Supplier {
   id: string;
@@ -115,45 +117,61 @@ export interface SimpleProduct {
 
 // New interface for detailed permission control
 export interface UserPermissions {
-  inventory: {
+  inventory: { 
     view: boolean;
-    edit: boolean;
-    delete: boolean;
+    add?: boolean;
+    edit?: boolean;
+    delete?: boolean;
+  };
+  sales: { 
+    view: boolean;
+    process?: boolean;
+    refund?: boolean;
+    export?: boolean;
+  };
+  customers: { 
+    view: boolean;
+    add?: boolean;
+    edit?: boolean;
+    delete?: boolean;
+  };
+  reports: { 
+    view: boolean;
+    export?: boolean;
+  };
+  settings: { 
+    view: boolean;
+    edit?: boolean;
+  };
+  shops: { 
+    view: boolean;
+    add?: boolean;
+    edit?: boolean;
+    delete?: boolean;
+  };
+  suppliers: { 
+    view: boolean;
+    add?: boolean;
+    edit?: boolean;
+    delete?: boolean;
+  };
+  exchange: { 
+    view: boolean;
+    request?: boolean;
+    send?: boolean;
+    approve?: boolean;
+    reject?: boolean;
   };
   pos: {
     access: boolean;
-    applyDiscounts: boolean;
-    voidTransactions: boolean;
-  };
-  customers: {
-    view: boolean;
-    edit: boolean;
-    delete: boolean;
-  };
-  reports: {
-    view: boolean;
-    export: boolean;
-  };
-  settings: {
-    view: boolean;
-    edit: boolean;
+    applyDiscounts?: boolean;
+    voidTransactions?: boolean;
   };
   users: {
     view: boolean;
-    create: boolean;
-    edit: boolean;
-    delete: boolean;
+    create?: boolean;
+    edit?: boolean;
+    delete?: boolean;
   };
-  shops: {
-    view: boolean;
-    create: boolean;
-    edit: boolean;
-    delete: boolean;
-  };
-  suppliers: {
-    view: boolean;
-    create: boolean;
-    edit: boolean;
-    delete: boolean;
-  };
+  [key: string]: Record<string, boolean> | undefined;
 }

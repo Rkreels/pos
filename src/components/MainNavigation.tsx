@@ -1,5 +1,5 @@
+
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
 import { 
   ShoppingCart, 
   LayoutDashboard, 
@@ -10,8 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Truck,
-  Building,
-  LogOut
+  Building
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -19,53 +18,8 @@ import { voiceAssistant } from '@/services/VoiceAssistant';
 import { ShopSelector } from '@/components/ShopSelector';
 import { useShop } from '@/context/ShopContext';
 import { useAuth } from '@/context/AuthContext';
-import { RoleSelector } from './RoleSelector';
-
-interface NavItemProps {
-  to: string;
-  icon: React.ElementType;
-  title: string;
-  isSidebarExpanded: boolean;
-  speakFunction?: () => void;
-  isVisible: boolean;
-}
-
-const NavItem: React.FC<NavItemProps> = ({ 
-  to, 
-  icon: Icon, 
-  title, 
-  isSidebarExpanded,
-  speakFunction,
-  isVisible
-}) => {
-  const location = useLocation();
-  const isActive = location.pathname === to;
-
-  if (!isVisible) return null;
-
-  const handleLinkClick = () => {
-    // Add a small delay to ensure the page transition happens first
-    setTimeout(() => {
-      if (speakFunction) {
-        speakFunction();
-      }
-    }, 800);
-  };
-
-  return (
-    <Link 
-      to={to} 
-      className={cn(
-        "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all hover:bg-sidebar-accent",
-        isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "transparent"
-      )}
-      onClick={handleLinkClick}
-    >
-      <Icon className="h-4 w-4" />
-      {isSidebarExpanded && <span>{title}</span>}
-    </Link>
-  );
-};
+import { NavItem } from './navigation/NavItem';
+import { SidebarProfile } from './navigation/SidebarProfile';
 
 interface MainNavigationProps {
   isCollapsed?: boolean;
@@ -78,7 +32,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
 }) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(!isCollapsed);
   const { currentShop } = useShop();
-  const { checkRouteAccess, logout, currentUser } = useAuth();
+  const { checkRouteAccess } = useAuth();
   
   React.useEffect(() => {
     setIsSidebarExpanded(!isCollapsed);
@@ -93,10 +47,10 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
 
   return (
     <div className={cn(
-      "h-screen bg-sidebar-background text-sidebar-foreground border-r border-gray-200 transition-all duration-300",
+      "h-screen bg-sidebar-background text-sidebar-foreground border-r border-gray-200 transition-all duration-300 flex flex-col",
       isSidebarExpanded ? "w-60" : "w-16"
     )}>
-      <div className="p-4">
+      <div className="p-4 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-4">
           {isSidebarExpanded ? (
             <h1 className="font-bold text-lg">POS System</h1>
@@ -116,13 +70,10 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
         {isSidebarExpanded && (
           <div className="mb-4">
             <ShopSelector />
-            <div className="mt-2">
-              <RoleSelector />
-            </div>
           </div>
         )}
         
-        <div className="space-y-1">
+        <div className="space-y-1 mt-4">
           <NavItem 
             to="/" 
             icon={LayoutDashboard} 
@@ -188,25 +139,8 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             isVisible={checkRouteAccess('/settings')}
           />
         </div>
-        
-        {isSidebarExpanded && (
-          <div className="absolute bottom-4 left-4 right-4">
-            <Button 
-              variant="ghost" 
-              className="w-full flex items-center justify-start text-red-500" 
-              onClick={logout}
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
-            
-            <div className="mt-2 text-xs text-gray-500 flex items-center">
-              <span className="mr-1">Logged in as:</span>
-              <span className="font-medium">{currentUser.name}</span>
-            </div>
-          </div>
-        )}
       </div>
+      <SidebarProfile isSidebarExpanded={isSidebarExpanded} />
     </div>
   );
 };

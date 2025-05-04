@@ -5,44 +5,52 @@ class RoleBasedAccessControl {
   // Define default permissions for each role
   private readonly defaultPermissions: Record<string, UserPermissions> = {
     admin: {
-      inventory: ['view', 'add', 'edit', 'delete'],
-      sales: ['view', 'process', 'refund', 'export'],
-      customers: ['view', 'add', 'edit', 'delete'],
-      reports: ['view', 'export'],
-      settings: ['view', 'edit'],
-      shops: ['view', 'add', 'edit', 'delete'],
-      suppliers: ['view', 'add', 'edit', 'delete'],
-      exchange: ['view', 'request', 'send', 'approve', 'reject']
+      inventory: { view: true, add: true, edit: true, delete: true },
+      sales: { view: true, process: true, refund: true, export: true },
+      customers: { view: true, add: true, edit: true, delete: true },
+      reports: { view: true, export: true },
+      settings: { view: true, edit: true },
+      shops: { view: true, add: true, edit: true, delete: true },
+      suppliers: { view: true, add: true, edit: true, delete: true },
+      exchange: { view: true, request: true, send: true, approve: true, reject: true },
+      pos: { access: true, applyDiscounts: true, voidTransactions: true },
+      users: { view: true, create: true, edit: true, delete: true }
     },
     manager: {
-      inventory: ['view', 'add', 'edit'],
-      sales: ['view', 'process', 'refund'],
-      customers: ['view', 'add', 'edit'],
-      reports: ['view', 'export'],
-      settings: ['view'],
-      shops: ['view'],
-      suppliers: ['view', 'add'],
-      exchange: ['view', 'request', 'send', 'approve']
+      inventory: { view: true, add: true, edit: true, delete: false },
+      sales: { view: true, process: true, refund: true, export: false },
+      customers: { view: true, add: true, edit: true, delete: false },
+      reports: { view: true, export: true },
+      settings: { view: true, edit: false },
+      shops: { view: true, add: false, edit: false, delete: false },
+      suppliers: { view: true, add: true, edit: false, delete: false },
+      exchange: { view: true, request: true, send: true, approve: true, reject: false },
+      pos: { access: true, applyDiscounts: true, voidTransactions: false },
+      users: { view: true, create: false, edit: false, delete: false }
     },
     cashier: {
-      inventory: ['view'],
-      sales: ['view', 'process'],
-      customers: ['view', 'add'],
-      reports: ['view'],
-      settings: [],
-      shops: [],
-      suppliers: [],
-      exchange: []
+      inventory: { view: true, add: false, edit: false, delete: false },
+      sales: { view: true, process: true, refund: false, export: false },
+      customers: { view: true, add: true, edit: false, delete: false },
+      reports: { view: true, export: false },
+      settings: { view: false, edit: false },
+      shops: { view: false, add: false, edit: false, delete: false },
+      suppliers: { view: false, add: false, edit: false, delete: false },
+      exchange: { view: false, request: false, send: false, approve: false, reject: false },
+      pos: { access: true, applyDiscounts: false, voidTransactions: false },
+      users: { view: false, create: false, edit: false, delete: false }
     },
     master: {
-      inventory: ['view', 'add', 'edit', 'delete'],
-      sales: ['view', 'process', 'refund', 'export'],
-      customers: ['view', 'add', 'edit', 'delete'],
-      reports: ['view', 'export'],
-      settings: ['view', 'edit'],
-      shops: ['view', 'add', 'edit', 'delete'],
-      suppliers: ['view', 'add', 'edit', 'delete'],
-      exchange: ['view', 'request', 'send', 'approve', 'reject']
+      inventory: { view: true, add: true, edit: true, delete: true },
+      sales: { view: true, process: true, refund: true, export: true },
+      customers: { view: true, add: true, edit: true, delete: true },
+      reports: { view: true, export: true },
+      settings: { view: true, edit: true },
+      shops: { view: true, add: true, edit: true, delete: true },
+      suppliers: { view: true, add: true, edit: true, delete: true },
+      exchange: { view: true, request: true, send: true, approve: true, reject: true },
+      pos: { access: true, applyDiscounts: true, voidTransactions: true },
+      users: { view: true, create: true, edit: true, delete: true }
     }
   };
 
@@ -94,9 +102,17 @@ class RoleBasedAccessControl {
     return this.defaultPermissions[user.role] || this.defaultPermissions.cashier;
   }
 
+  getDefaultPermissions(role: string): UserPermissions {
+    return this.defaultPermissions[role] || this.defaultPermissions.cashier;
+  }
+
   hasPermission(user: User, module: keyof UserPermissions, action: string): boolean {
     const permissions = this.getUserPermissions(user);
-    return permissions[module]?.includes(action) || false;
+    const modulePermissions = permissions[module];
+    
+    if (!modulePermissions) return false;
+    
+    return modulePermissions[action as keyof typeof modulePermissions] || false;
   }
 
   getRouteAccess(user: User): Record<string, boolean> {

@@ -1,36 +1,29 @@
 
 import { Supplier, Product, ProductReference } from '@/types';
 
-/**
- * Utility function to convert ProductReference array to string[] for supplier products
- */
-export const extractProductIds = (products?: ProductReference[]): string[] => {
-  if (!products) return [];
-  
-  return products.map(product => {
-    if (typeof product === 'string') {
-      return product;
-    } else {
-      return product.id;
-    }
+export const attachProductsToSuppliers = (
+  suppliers: Supplier[], 
+  products: Product[]
+): Supplier[] => {
+  return suppliers.map(supplier => {
+    // Find all products that have this supplier ID
+    const supplierProducts = products.filter(product => product.supplierId === supplier.id);
+    
+    // Create references using product IDs
+    const productReferences: ProductReference[] = supplierProducts.map(product => ({
+      id: product.id,
+      name: product.name
+    }));
+    
+    // Return supplier with products attached
+    return {
+      ...supplier,
+      products: productReferences
+    };
   });
 };
 
-/**
- * Utility function to get a product name from its ID or object
- */
-export const getProductName = (product: ProductReference): string => {
-  if (typeof product === 'string') {
-    return 'Product #' + product; // Placeholder for when we only have the ID
-  } else {
-    return product.name;
-  }
-};
-
-// Add function to find products by IDs
-export const findProductsByIds = (productIds: string[], allProducts: Product[]): Product[] => {
-  return productIds.map(id => {
-    const product = allProducts.find(p => p.id === id);
-    return product || null;
-  }).filter(Boolean) as Product[];
+export const getSupplierProductIds = (supplier: Supplier): string[] => {
+  if (!supplier.products) return [];
+  return supplier.products.map(product => product.id);
 };

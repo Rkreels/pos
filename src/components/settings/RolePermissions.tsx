@@ -13,11 +13,11 @@ import { UserPermissions } from '@/types';
 
 export const RolePermissions: React.FC = () => {
   const [activeRole, setActiveRole] = useState<'admin' | 'master' | 'manager' | 'cashier'>('admin');
-  const [permissions, setPermissions] = useState<UserPermissions>(rbac.getDefaultPermissions('admin'));
+  const [permissions, setPermissions] = useState<UserPermissions>(rbac.getUserPermissions({ role: activeRole } as any));
 
   // Load default permissions for the selected role
   useEffect(() => {
-    setPermissions(rbac.getDefaultPermissions(activeRole));
+    setPermissions(rbac.getUserPermissions({ role: activeRole } as any));
   }, [activeRole]);
 
   // Handle permission toggle
@@ -26,13 +26,13 @@ export const RolePermissions: React.FC = () => {
     action: string, 
     value: boolean
   ) => {
-    setPermissions(prev => ({
-      ...prev,
-      [module]: {
-        ...prev[module],
-        [action]: value
+    setPermissions(prev => {
+      const newPermissions = { ...prev };
+      if (newPermissions[module]) {
+        (newPermissions[module] as any)[action] = value;
       }
-    }));
+      return newPermissions;
+    });
   };
 
   // Save permission changes
@@ -56,7 +56,7 @@ export const RolePermissions: React.FC = () => {
         <Label htmlFor={`${module}-${action}`} className="flex-1">{label}</Label>
         <Switch 
           id={`${module}-${action}`} 
-          checked={permissions[module][action as keyof typeof permissions[module]]} 
+          checked={permissions[module] ? Boolean((permissions[module] as any)[action]) : false} 
           onCheckedChange={(checked) => handlePermissionToggle(module, action, checked)}
           disabled={activeRole === 'admin' && action === 'view'} // Admin always has view permission
         />

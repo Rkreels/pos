@@ -35,12 +35,15 @@ export const RoleSelector: React.FC = () => {
     <div className="flex flex-col gap-1">
       <Select value={currentUser.id} onValueChange={handleUserChange}>
         <SelectTrigger className="w-full h-8 text-xs">
-          <SelectValue placeholder="Select user" />
+          <div className="flex items-center gap-2">
+            <span className="truncate">{currentUser.name}</span>
+            {roleBadges[currentUser.role as keyof typeof roleBadges]}
+          </div>
         </SelectTrigger>
         <SelectContent>
           {userList.map((user) => (
             <SelectItem key={user.id} value={user.id}>
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
                 <span>{user.name}</span>
                 {roleBadges[user.role as keyof typeof roleBadges]}
               </div>
@@ -48,9 +51,6 @@ export const RoleSelector: React.FC = () => {
           ))}
         </SelectContent>
       </Select>
-      <div className="text-xs text-gray-500">
-        Current role: {roleBadges[currentUser.role as keyof typeof roleBadges]}
-      </div>
     </div>
   );
 };
