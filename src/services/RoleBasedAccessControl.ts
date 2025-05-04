@@ -1,92 +1,107 @@
 
-import { User, UserPermissions } from "@/types";
-
-// Default role-based permissions mapping
-const defaultPermissions: Record<'admin' | 'master' | 'manager' | 'cashier', UserPermissions> = {
-  admin: {
-    inventory: { view: true, edit: true, delete: true },
-    pos: { access: true, applyDiscounts: true, voidTransactions: true },
-    customers: { view: true, edit: true, delete: true },
-    reports: { view: true, export: true },
-    settings: { view: true, edit: true },
-    users: { view: true, create: true, edit: true, delete: true },
-    shops: { view: true, create: true, edit: true, delete: true },
-    suppliers: { view: true, create: true, edit: true, delete: true }
-  },
-  master: {
-    inventory: { view: true, edit: true, delete: true },
-    pos: { access: true, applyDiscounts: true, voidTransactions: true },
-    customers: { view: true, edit: true, delete: true },
-    reports: { view: true, export: true },
-    settings: { view: true, edit: false },
-    users: { view: true, create: true, edit: true, delete: false },
-    shops: { view: true, create: false, edit: true, delete: false },
-    suppliers: { view: true, create: true, edit: true, delete: true }
-  },
-  manager: {
-    inventory: { view: true, edit: true, delete: false },
-    pos: { access: true, applyDiscounts: true, voidTransactions: false },
-    customers: { view: true, edit: true, delete: false },
-    reports: { view: true, export: true },
-    settings: { view: false, edit: false },
-    users: { view: true, create: false, edit: false, delete: false },
-    shops: { view: false, create: false, edit: false, delete: false },
-    suppliers: { view: true, create: false, edit: false, delete: false }
-  },
-  cashier: {
-    inventory: { view: true, edit: false, delete: false },
-    pos: { access: true, applyDiscounts: false, voidTransactions: false },
-    customers: { view: true, edit: false, delete: false },
-    reports: { view: false, export: false },
-    settings: { view: false, edit: false },
-    users: { view: false, create: false, edit: false, delete: false },
-    shops: { view: false, create: false, edit: false, delete: false },
-    suppliers: { view: false, create: false, edit: false, delete: false }
-  }
-};
+import { User, UserPermissions } from '@/types';
 
 class RoleBasedAccessControl {
-  // Get default permissions for a role
-  getDefaultPermissions(role: 'admin' | 'master' | 'manager' | 'cashier'): UserPermissions {
-    return defaultPermissions[role];
-  }
-
-  // Get permissions for a specific user
-  getUserPermissions(user: User): UserPermissions {
-    // Use custom permissions if defined, otherwise use default permissions for the role
-    return user.permissions || this.getDefaultPermissions(user.role);
-  }
-
-  // Check if user has a specific permission
-  hasPermission(user: User, module: keyof UserPermissions, action: string): boolean {
-    // Get user permissions
-    const permissions = this.getUserPermissions(user);
-    
-    // If module and action exist in permissions, return the value
-    if (permissions[module] && action in permissions[module]) {
-      return permissions[module][action as keyof typeof permissions[module]];
+  // Define default permissions for each role
+  private readonly defaultPermissions: Record<string, UserPermissions> = {
+    admin: {
+      inventory: ['view', 'add', 'edit', 'delete'],
+      sales: ['view', 'process', 'refund', 'export'],
+      customers: ['view', 'add', 'edit', 'delete'],
+      reports: ['view', 'export'],
+      settings: ['view', 'edit'],
+      shops: ['view', 'add', 'edit', 'delete'],
+      suppliers: ['view', 'add', 'edit', 'delete'],
+      exchange: ['view', 'request', 'send', 'approve', 'reject']
+    },
+    manager: {
+      inventory: ['view', 'add', 'edit'],
+      sales: ['view', 'process', 'refund'],
+      customers: ['view', 'add', 'edit'],
+      reports: ['view', 'export'],
+      settings: ['view'],
+      shops: ['view'],
+      suppliers: ['view', 'add'],
+      exchange: ['view', 'request', 'send', 'approve']
+    },
+    cashier: {
+      inventory: ['view'],
+      sales: ['view', 'process'],
+      customers: ['view', 'add'],
+      reports: ['view'],
+      settings: [],
+      shops: [],
+      suppliers: [],
+      exchange: []
+    },
+    master: {
+      inventory: ['view', 'add', 'edit', 'delete'],
+      sales: ['view', 'process', 'refund', 'export'],
+      customers: ['view', 'add', 'edit', 'delete'],
+      reports: ['view', 'export'],
+      settings: ['view', 'edit'],
+      shops: ['view', 'add', 'edit', 'delete'],
+      suppliers: ['view', 'add', 'edit', 'delete'],
+      exchange: ['view', 'request', 'send', 'approve', 'reject']
     }
-    
-    // Default to false if permission is not found
-    return false;
+  };
+
+  // Define route access for each role
+  private readonly routeAccess: Record<string, Record<string, boolean>> = {
+    admin: {
+      '/': true,
+      '/pos': true,
+      '/inventory': true,
+      '/reports': true,
+      '/customers': true,
+      '/settings': true,
+      '/shops': true,
+      '/suppliers': true,
+    },
+    manager: {
+      '/': true,
+      '/pos': true,
+      '/inventory': true,
+      '/reports': true,
+      '/customers': true,
+      '/settings': true,
+      '/shops': true,
+      '/suppliers': true,
+    },
+    cashier: {
+      '/': true,
+      '/pos': true,
+      '/inventory': true,
+      '/customers': true,
+      '/reports': true,
+      '/settings': false,
+      '/shops': false,
+      '/suppliers': false,
+    },
+    master: {
+      '/': true,
+      '/pos': true,
+      '/inventory': true,
+      '/reports': true,
+      '/customers': true,
+      '/settings': true,
+      '/shops': true,
+      '/suppliers': true,
+    }
+  };
+
+  getUserPermissions(user: User): UserPermissions {
+    return this.defaultPermissions[user.role] || this.defaultPermissions.cashier;
   }
 
-  // Generate route access map for a user
-  getRouteAccess(user: User): Record<string, boolean> {
+  hasPermission(user: User, module: keyof UserPermissions, action: string): boolean {
     const permissions = this.getUserPermissions(user);
-    
-    return {
-      '/': true, // Everyone can access dashboard
-      '/pos': permissions.pos.access,
-      '/inventory': permissions.inventory.view,
-      '/customers': permissions.customers.view,
-      '/reports': permissions.reports.view,
-      '/settings': permissions.settings.view || user.role === 'admin',
-      '/shops': permissions.shops.view || user.role === 'admin' || user.role === 'master',
-      '/suppliers': permissions.suppliers.view
-    };
+    return permissions[module]?.includes(action) || false;
+  }
+
+  getRouteAccess(user: User): Record<string, boolean> {
+    return this.routeAccess[user.role] || this.routeAccess.cashier;
   }
 }
 
 export const rbac = new RoleBasedAccessControl();
-export default rbac;

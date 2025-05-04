@@ -73,15 +73,43 @@ class VoiceAssistant {
   speakInventoryExchange() {
     this.speak("You can use the inventory exchange feature to request or send products between your shops. This helps manage stock levels across all your locations.");
   }
-}
 
-export const voiceAssistant = new VoiceAssistant();
+  // Add missing methods for voice assistance
+  speakCartEmpty() {
+    this.speak("Your cart is currently empty. Add products to begin a transaction.");
+  }
 
-// Also export the custom voice assistant for backward compatibility
-class CustomVoiceAssistant {
-  speakInventoryExchange() {
-    console.log("Voice Assistant would say: You can use the inventory exchange feature to request or send products between your shops. This helps manage stock levels across all your locations.");
+  speakAddProduct() {
+    this.speak("Please fill in the product details to add a new item to your inventory.");
+  }
+
+  speakEditProduct() {
+    this.speak("You can modify the details of this product and update your inventory.");
+  }
+
+  speakAddCustomer() {
+    this.speak("Please fill in the customer details to add a new customer to your database.");
+  }
+
+  speakEditCustomer() {
+    this.speak("You can modify the details of this customer and update your records.");
+  }
+
+  speakWeeklyReport() {
+    this.speak("Here is your weekly sales report. You can view performance data for the past week.");
+  }
+
+  speakMonthlyReport() {
+    this.speak("Here is your monthly sales report. You can view performance data for the past month.");
+  }
+
+  speakYearlyReport() {
+    this.speak("Here is your yearly sales report. You can view performance data for the past year.");
+  }
+
+  speakExportReport() {
+    this.speak("Your report has been exported successfully.");
   }
 }
 
-export const customVoiceAssistant = new CustomVoiceAssistant();
+export const voiceAssistant = new VoiceAssistant();

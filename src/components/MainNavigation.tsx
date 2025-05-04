@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -8,8 +7,6 @@ import {
   Package, 
   Users, 
   Settings,
-  Menu,
-  X,
   ChevronLeft,
   ChevronRight,
   Truck,
@@ -139,7 +136,7 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             icon={ShoppingCart} 
             title="Point of Sale" 
             isSidebarExpanded={isSidebarExpanded}
-            speakFunction={() => voiceAssistant.speakPageOverview()}
+            speakFunction={() => voiceAssistant.speakPOSPage()}
             isVisible={checkRouteAccess('/pos')}
           />
           <NavItem 

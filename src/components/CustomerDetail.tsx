@@ -15,7 +15,6 @@ export const convertToFullProduct = (simpleProduct: SimpleProduct): Product => {
   };
 };
 
-// Updated CustomerDetail component with proper props
 export interface CustomerDetailProps {
   customer: Customer;
   onBack?: () => void;

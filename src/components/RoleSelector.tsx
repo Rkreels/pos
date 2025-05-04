@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { voiceAssistant } from '@/services/VoiceAssistant';
 
 export const RoleSelector: React.FC = () => {
   const { userList, currentUser, setCurrentUser } = useAuth();
@@ -26,14 +27,14 @@ export const RoleSelector: React.FC = () => {
     const selectedUser = userList.find(user => user.id === userId);
     if (selectedUser) {
       setCurrentUser(selectedUser);
+      voiceAssistant.speakRoleOverview(selectedUser.role);
     }
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-sm font-medium">Test as:</span>
+    <div className="flex flex-col gap-1">
       <Select value={currentUser.id} onValueChange={handleUserChange}>
-        <SelectTrigger className="w-44">
+        <SelectTrigger className="w-full h-8 text-xs">
           <SelectValue placeholder="Select user" />
         </SelectTrigger>
         <SelectContent>
@@ -47,7 +48,9 @@ export const RoleSelector: React.FC = () => {
           ))}
         </SelectContent>
       </Select>
-      <div>{roleBadges[currentUser.role as keyof typeof roleBadges]}</div>
+      <div className="text-xs text-gray-500">
+        Current role: {roleBadges[currentUser.role as keyof typeof roleBadges]}
+      </div>
     </div>
   );
 };

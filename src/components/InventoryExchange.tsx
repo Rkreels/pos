@@ -13,69 +13,119 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useShop } from '@/context/ShopContext';
 import { toast } from 'sonner';
-import { ArrowRight, PackageCheck } from 'lucide-react';
+import { ArrowRight, PackageCheck, Plus, Minus } from 'lucide-react';
+import { voiceAssistant } from '@/services/VoiceAssistant';
 
 interface InventoryExchangeProps {
   products: Product[];
   setProducts: (products: Product[]) => void;
 }
 
+interface ProductExchange {
+  productId: string;
+  quantity: number;
+}
+
 export const InventoryExchange: React.FC<InventoryExchangeProps> = ({ products, setProducts }) => {
   const { shops, currentShop } = useShop();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [targetShop, setTargetShop] = useState<string>('');
-  const [exchangeQuantity, setExchangeQuantity] = useState(1);
   const [isRequestMode, setIsRequestMode] = useState(false);
-  
-  // Filter out products with stock for sending
-  const productsWithStock = products.filter(product => product.stockQuantity > 0);
+  const [selectedProducts, setSelectedProducts] = useState<ProductExchange[]>([]);
   
   // Filter out current shop from the list
   const otherShops = shops.filter(shop => shop.id !== currentShop?.id);
   
-  const handleInitiateExchange = (product: Product, isRequest: boolean) => {
-    setSelectedProduct(product);
-    setExchangeQuantity(1);
+  const handleInitiateExchange = (isRequest: boolean) => {
+    setSelectedProducts([]);
     setTargetShop('');
     setIsRequestMode(isRequest);
     setIsDialogOpen(true);
+    voiceAssistant.speakInventoryExchange();
+  };
+  
+  const handleAddProduct = () => {
+    setSelectedProducts([...selectedProducts, { productId: '', quantity: 1 }]);
+  };
+  
+  const handleRemoveProduct = (index: number) => {
+    const newSelectedProducts = [...selectedProducts];
+    newSelectedProducts.splice(index, 1);
+    setSelectedProducts(newSelectedProducts);
+  };
+  
+  const updateProductSelection = (index: number, productId: string) => {
+    const newSelectedProducts = [...selectedProducts];
+    newSelectedProducts[index].productId = productId;
+    setSelectedProducts(newSelectedProducts);
+  };
+  
+  const updateProductQuantity = (index: number, quantity: number) => {
+    const newSelectedProducts = [...selectedProducts];
+    newSelectedProducts[index].quantity = quantity;
+    setSelectedProducts(newSelectedProducts);
   };
   
   const handleExchange = () => {
-    if (!selectedProduct || !targetShop || exchangeQuantity <= 0) {
-      toast.error("Please select all required fields");
+    if (!targetShop || selectedProducts.length === 0) {
+      toast.error("Please select a shop and at least one product");
+      return;
+    }
+    
+    if (selectedProducts.some(item => !item.productId || item.quantity <= 0)) {
+      toast.error("Please complete all product selections with valid quantities");
       return;
     }
     
     if (!isRequestMode) {
-      // Sending inventory
-      if (selectedProduct.stockQuantity < exchangeQuantity) {
-        toast.error("Not enough stock to send");
+      // Check if we have enough stock
+      const insufficientStock = selectedProducts.some(item => {
+        const product = products.find(p => p.id === item.productId);
+        return !product || product.stockQuantity < item.quantity;
+      });
+      
+      if (insufficientStock) {
+        toast.error("Not enough stock for one or more selected products");
         return;
       }
       
       // Update current shop's inventory
-      const updatedProducts = products.map(p => 
-        p.id === selectedProduct.id
-          ? { ...p, stockQuantity: p.stockQuantity - exchangeQuantity }
-          : p
-      );
+      const updatedProducts = products.map(p => {
+        const exchangeItem = selectedProducts.find(item => item.productId === p.id);
+        if (exchangeItem) {
+          return { ...p, stockQuantity: p.stockQuantity - exchangeItem.quantity };
+        }
+        return p;
+      });
       
       setProducts(updatedProducts);
       
       const targetShopName = shops.find(s => s.id === targetShop)?.name || "another shop";
-      toast.success(`Sent ${exchangeQuantity} ${selectedProduct.name} to ${targetShopName}`);
+      const productCount = selectedProducts.length;
+      toast.success(`Sent ${productCount} product${productCount > 1 ? 's' : ''} to ${targetShopName}`);
     } else {
-      // Requesting inventory (in a real app, this would send a notification to the other shop)
+      // Requesting inventory
       const sourceShopName = shops.find(s => s.id === targetShop)?.name || "another shop";
-      toast.success(`Requested ${exchangeQuantity} ${selectedProduct.name} from ${sourceShopName}`);
+      const productCount = selectedProducts.length;
+      toast.success(`Requested ${productCount} product${productCount > 1 ? 's' : ''} from ${sourceShopName}`);
     }
     
     setIsDialogOpen(false);
   };
+  
+  // Get product names for display
+  const getProductName = (productId: string): string => {
+    const product = products.find(p => p.id === productId);
+    return product ? `${product.name} (${product.stockQuantity} in stock)` : '';
+  };
+  
+  // Filter products with stock for sending
+  const productsWithStock = products.filter(product => 
+    isRequestMode || product.stockQuantity > 0
+  );
   
   return (
     <>
@@ -99,9 +149,7 @@ export const InventoryExchange: React.FC<InventoryExchangeProps> = ({ products, 
                   toast.error("No other shops available for inventory exchange");
                   return;
                 }
-                setIsRequestMode(true);
-                setIsDialogOpen(true);
-                setSelectedProduct(null);
+                handleInitiateExchange(true);
               }}
               className="w-full"
             >
@@ -128,9 +176,7 @@ export const InventoryExchange: React.FC<InventoryExchangeProps> = ({ products, 
                   toast.error("No products with available stock to send");
                   return;
                 }
-                setIsRequestMode(false);
-                setIsDialogOpen(true);
-                setSelectedProduct(null);
+                handleInitiateExchange(false);
               }}
               variant="outline"
               className="w-full"
@@ -142,7 +188,7 @@ export const InventoryExchange: React.FC<InventoryExchangeProps> = ({ products, 
       </div>
       
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>
               {isRequestMode ? 'Request Inventory' : 'Send Inventory'}
@@ -176,43 +222,61 @@ export const InventoryExchange: React.FC<InventoryExchangeProps> = ({ products, 
               </Select>
             </div>
             
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="product" className="text-right">Product</Label>
-              <Select
-                value={selectedProduct?.id || ''}
-                onValueChange={(value) => {
-                  const product = products.find(p => p.id === value);
-                  setSelectedProduct(product || null);
-                }}
-              >
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Select product" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(isRequestMode ? products : productsWithStock).map((product) => (
-                    <SelectItem key={product.id} value={product.id}>
-                      {product.name} {!isRequestMode && `(${product.stockQuantity} in stock)`}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="quantity" className="text-right">Quantity</Label>
-              <Input
-                id="quantity"
-                type="number"
-                min="1"
-                value={exchangeQuantity}
-                onChange={(e) => setExchangeQuantity(parseInt(e.target.value) || 1)}
-                className="col-span-3"
-              />
-            </div>
-            
-            {!isRequestMode && selectedProduct && (
-              <div className="text-sm text-gray-500 col-span-4 text-right">
-                Current stock: {selectedProduct.stockQuantity}
+            {selectedProducts.length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-500 mb-2">No products selected yet</p>
+                <Button onClick={handleAddProduct} size="sm">
+                  <Plus className="h-4 w-4 mr-1" /> Add Product
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {selectedProducts.map((item, index) => (
+                  <div key={index} className="flex items-center gap-2 p-2 border rounded-md">
+                    <div className="flex-1">
+                      <div className="flex gap-2">
+                        <Select
+                          value={item.productId}
+                          onValueChange={(value) => updateProductSelection(index, value)}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select product" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {productsWithStock.map((product) => (
+                              <SelectItem key={product.id} value={product.id}>
+                                {product.name} {!isRequestMode && `(${product.stockQuantity} in stock)`}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        
+                        <div className="flex items-center gap-1">
+                          <Label htmlFor={`quantity-${index}`} className="sr-only">Quantity</Label>
+                          <Input
+                            id={`quantity-${index}`}
+                            type="number"
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) => updateProductQuantity(index, parseInt(e.target.value) || 1)}
+                            className="w-20"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      onClick={() => handleRemoveProduct(index)}
+                    >
+                      <Minus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                
+                <Button onClick={handleAddProduct} variant="outline" size="sm" className="mt-2">
+                  <Plus className="h-4 w-4 mr-1" /> Add Another Product
+                </Button>
               </div>
             )}
           </div>
@@ -224,7 +288,7 @@ export const InventoryExchange: React.FC<InventoryExchangeProps> = ({ products, 
             <Button 
               type="button" 
               onClick={handleExchange}
-              disabled={!selectedProduct || !targetShop || exchangeQuantity <= 0}
+              disabled={!targetShop || selectedProducts.length === 0 || selectedProducts.some(item => !item.productId)}
             >
               {isRequestMode ? 'Send Request' : 'Send Inventory'}
             </Button>
