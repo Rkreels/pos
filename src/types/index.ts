@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -90,6 +89,19 @@ export interface Organization {
   trialEndsAt?: Date;
   createdAt: Date;
   ownerId: string;
+}
+
+// Adding ProductReference to fix supplier products array issues
+export type ProductReference = string | Product;
+
+export interface Supplier {
+  id: string;
+  name: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  address: string;
+  products?: ProductReference[];
 }
 
 // Add ShopContext for multi-shop support

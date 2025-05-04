@@ -1,6 +1,7 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { Shop } from '@/types';
+import { Shop, User } from '@/types';
+import { toast } from 'sonner';
 
 // Sample shop data for demo
 const sampleShops: Shop[] = [
@@ -35,16 +36,29 @@ const sampleShops: Shop[] = [
   }
 ];
 
+// Sample current user - In a real app, this would come from an auth context
+const mockCurrentUser: User = {
+  id: '5',
+  name: 'Mark Master',
+  email: 'mark@example.com',
+  role: 'master',
+  status: 'active',
+  managedShops: ['1', '2', '3']
+};
+
 interface ShopContextProps {
   children: ReactNode;
+  currentUser?: User; // Optional prop to override the mock user
 }
 
-const ShopContext = createContext<{
+export interface ShopContextType {
   currentShop: Shop | null;
   shops: Shop[];
   setCurrentShop: (shop: Shop) => void;
   refreshShops: () => void;
-}>({
+}
+
+const ShopContext = createContext<ShopContextType>({
   currentShop: null,
   shops: [],
   setCurrentShop: () => {},
@@ -53,16 +67,51 @@ const ShopContext = createContext<{
 
 export const useShop = () => useContext(ShopContext);
 
-export const ShopProvider: React.FC<ShopContextProps> = ({ children }) => {
+export const ShopProvider: React.FC<ShopContextProps> = ({ children, currentUser = mockCurrentUser }) => {
   const [shops, setShops] = useState<Shop[]>(sampleShops);
   const [currentShop, setCurrentShop] = useState<Shop | null>(null);
 
-  useEffect(() => {
-    // Set the first shop as default when the component mounts
-    if (shops.length > 0 && !currentShop) {
-      setCurrentShop(shops[0]);
+  // Filter shops based on user role
+  const filteredShops = React.useMemo(() => {
+    if (currentUser.role === 'admin') {
+      // Admin can see all shops
+      return shops;
+    } else if (currentUser.role === 'master' && currentUser.managedShops) {
+      // Master manager can only see their assigned shops
+      return shops.filter(shop => 
+        currentUser.managedShops?.includes(shop.id)
+      );
+    } else if (currentUser.role === 'manager' && currentUser.managedShops) {
+      // Regular manager typically manages one shop
+      return shops.filter(shop => 
+        currentUser.managedShops?.includes(shop.id)
+      );
+    } else {
+      // Cashiers typically only see one shop
+      // In a real app, you would fetch the shop they're assigned to
+      return shops;
     }
-  }, [shops, currentShop]);
+  }, [shops, currentUser]);
+
+  useEffect(() => {
+    // Set the first accessible shop as default when the component mounts
+    if (filteredShops.length > 0 && !currentShop) {
+      setCurrentShop(filteredShops[0]);
+    }
+  }, [filteredShops, currentShop]);
+
+  const handleSetCurrentShop = (shop: Shop) => {
+    // Check if user has access to this shop
+    const hasAccess = filteredShops.some(s => s.id === shop.id);
+    
+    if (!hasAccess) {
+      toast.error("You don't have access to this shop");
+      return;
+    }
+    
+    setCurrentShop(shop);
+    toast.success(`Switched to ${shop.name}`);
+  };
 
   const refreshShops = () => {
     // In a real application, this would fetch the latest shops from an API
@@ -75,8 +124,8 @@ export const ShopProvider: React.FC<ShopContextProps> = ({ children }) => {
     <ShopContext.Provider 
       value={{ 
         currentShop, 
-        shops, 
-        setCurrentShop, 
+        shops: filteredShops, 
+        setCurrentShop: handleSetCurrentShop, 
         refreshShops 
       }}
     >

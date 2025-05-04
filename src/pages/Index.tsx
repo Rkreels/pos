@@ -60,6 +60,7 @@ const Index = () => {
         voiceAssistant.speakMasterDashboard();
       } else {
         voiceAssistant.speakPageOverview();
+        voiceAssistant.speakRoleOverview(currentUser.role);
       }
     }, 800);
     
@@ -68,6 +69,13 @@ const Index = () => {
       voiceAssistant.stopSpeaking();
     };
   }, []);
+
+  useEffect(() => {
+    // When shop changes, announce it
+    if (currentShop) {
+      voiceAssistant.speakShopSwitched(currentShop.name);
+    }
+  }, [currentShop?.id]);
 
   // Determine whether to show master dashboard or regular dashboard
   const showMasterDashboard = currentUser.role === 'master' && currentUser.managedShops && currentUser.managedShops.length > 0;
