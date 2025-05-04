@@ -1,6 +1,6 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { User } from '@/types';
+import { User, UserPermissions } from '@/types';
 import { rbac } from '@/services/RoleBasedAccessControl';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -95,9 +95,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const hasPermission = (module: string, action: string) => {
+    // Fix: Use module as keyof UserPermissions instead of trying to use typeof with a function call
     return rbac.hasPermission(
       currentUser, 
-      module as keyof typeof rbac.getUserPermissions(currentUser),
+      module as keyof UserPermissions,
       action
     );
   };
