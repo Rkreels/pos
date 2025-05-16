@@ -36,15 +36,15 @@ export const RoleSelector: React.FC = () => {
         <SelectTrigger className="w-full h-8 text-xs max-w-[180px]">
           <div className="flex items-center gap-2 truncate">
             <span className="truncate max-w-[100px]">{currentUser.name}</span>
-            {roleBadges[currentUser.role as keyof typeof roleBadges]}
+            {currentUser.role && roleBadges[currentUser.role as keyof typeof roleBadges]}
           </div>
         </SelectTrigger>
         <SelectContent>
           {userList.map((user) => (
-            <SelectItem key={user.id} value={user.id}>
+            <SelectItem key={user.id} value={user.id || `user-${user.name}`}>
               <div className="flex items-center gap-2">
                 <span>{user.name}</span>
-                {roleBadges[user.role as keyof typeof roleBadges]}
+                {user.role && roleBadges[user.role as keyof typeof roleBadges]}
               </div>
             </SelectItem>
           ))}

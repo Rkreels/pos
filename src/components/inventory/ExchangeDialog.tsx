@@ -123,13 +123,17 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
               {isRequestMode ? 'From Shop' : 'To Shop'}
             </Label>
             <Select
-              value={targetShop}
-              onValueChange={setTargetShop}
+              value={targetShop || "select-shop"}
+              onValueChange={(value) => setTargetShop(value === "select-shop" ? "" : value)}
             >
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select shop" />
               </SelectTrigger>
               <SelectContent>
+                {/* Add a placeholder option with a non-empty value */}
+                <SelectItem key="placeholder" value="select-shop">
+                  Select a shop
+                </SelectItem>
                 {otherShops.map((shop) => (
                   <SelectItem key={shop.id} value={shop.id}>
                     {shop.name}

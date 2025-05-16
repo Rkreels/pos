@@ -31,18 +31,25 @@ export const ExchangeProductItem: React.FC<ExchangeProductItemProps> = ({
   onProductChange,
   onQuantityChange
 }) => {
+  // Ensure product id is never an empty string
+  const productId = item.productId || "select-product";
+
   return (
     <div className="flex items-center gap-2 p-2 border rounded-md">
       <div className="flex-1">
         <div className="flex gap-2">
           <Select
-            value={item.productId}
-            onValueChange={(value) => onProductChange(index, value)}
+            value={productId}
+            onValueChange={(value) => onProductChange(index, value === "select-product" ? "" : value)}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select product" />
             </SelectTrigger>
             <SelectContent>
+              {/* Add a placeholder option with a non-empty value */}
+              <SelectItem key="placeholder" value="select-product">
+                Select a product
+              </SelectItem>
               {products.map((product) => (
                 <SelectItem key={product.id} value={product.id}>
                   {product.name} {!isRequestMode && `(${product.stockQuantity} in stock)`}
