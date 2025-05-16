@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { Product } from '@/types';
-import { productData } from '@/data/products';
+import { db } from '@/services/LocalStorageDB';
 import { useShop } from '@/context/ShopContext';
 import { InventoryPageLayout } from '@/components/inventory/InventoryPageLayout';
 import { InventoryContent } from '@/components/inventory/InventoryContent';
+import { toast } from 'sonner';
 
 const InventoryPage: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>(productData);
+  // Use LocalStorageDB to get dynamic product data
+  const [products, setProducts] = useState<Product[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newProduct, setNewProduct] = useState<Partial<Product>>({
     name: '',
@@ -24,7 +26,12 @@ const InventoryPage: React.FC = () => {
   const [newCategory, setNewCategory] = useState('');
   const { currentShop } = useShop();
   
+  // Load products from LocalStorageDB
   useEffect(() => {
+    // Fetch products from database
+    const loadedProducts = db.getCollection<Product>('products');
+    setProducts(loadedProducts);
+    
     // Speak page overview when the page loads
     const timer = setTimeout(() => {
       voiceAssistant.speakInventoryPage();
@@ -35,6 +42,25 @@ const InventoryPage: React.FC = () => {
       voiceAssistant.stopSpeaking();
     };
   }, []);
+  
+  // Update products in LocalStorageDB when they change
+  useEffect(() => {
+    if (products.length > 0) {
+      db.saveCollection('products', products);
+      console.log('Products saved to local storage database');
+    }
+  }, [products]);
+  
+  // Handle shop change
+  useEffect(() => {
+    if (currentShop) {
+      // In a real app, we would filter products by shop ID
+      // For now, we'll reload all products
+      const shopProducts = db.getCollection<Product>('products');
+      setProducts(shopProducts);
+      toast.info(`Loaded inventory for ${currentShop.name}`);
+    }
+  }, [currentShop?.id]);
 
   return (
     <InventoryPageLayout currentShop={currentShop}>

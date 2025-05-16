@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { Input } from '@/components/ui/input';
-import { Search, Tag, ShoppingCart, Image as ImageIcon } from 'lucide-react';
+import { Search, Tag, ShoppingCart, Image as ImageIcon, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface ProductListProps {
@@ -30,15 +30,28 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
     onAddToCart(product);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       voiceAssistant.speak(
-        "Here are the available products. You can search for items using the search bar or filter by category. Browse through the items and click 'Add to Cart' for products you'd like to purchase."
+        "Here are the available products. You can search for items using the search bar or filter by category. Browse through the items and click 'Add to Cart' for products you'd like to purchase. All product information and availability is updated in real-time from your inventory."
       );
     }, 1000);
     
     return () => clearTimeout(timer);
   }, []);
+
+  // Speak guidance when filter is used
+  useEffect(() => {
+    if (searchTerm) {
+      voiceAssistant.speakProductSearch();
+    }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (categoryFilter) {
+      voiceAssistant.speakCategoryFilter();
+    }
+  }, [categoryFilter]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -51,6 +64,7 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9"
+            aria-label="Search products"
           />
         </div>
         <div className="flex flex-wrap gap-1">
@@ -73,12 +87,12 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
           No products found matching your search
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
           {filteredProducts.map((product) => (
             <Card key={product.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-2">
                 <div className="flex flex-col h-full">
-                  <div className="aspect-square bg-gray-100 rounded-md mb-2 overflow-hidden">
+                  <div className="aspect-square bg-gray-100 rounded-md mb-2 overflow-hidden relative">
                     {product.image ? (
                       <img 
                         src={product.image} 
@@ -88,6 +102,13 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
                         <ImageIcon className="h-8 w-8" />
+                      </div>
+                    )}
+                    {product.stockQuantity !== undefined && product.stockQuantity <= 0 && (
+                      <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+                        <div className="bg-red-500 text-white text-xs px-2 py-1 rounded flex items-center">
+                          <AlertTriangle className="h-3 w-3 mr-1" /> Out of Stock
+                        </div>
                       </div>
                     )}
                   </div>
@@ -103,13 +124,14 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
                         className="h-6 px-1.5"
                         size="sm"
                         disabled={product.stockQuantity !== undefined && product.stockQuantity <= 0}
+                        title={product.stockQuantity !== undefined && product.stockQuantity <= 0 ? "Out of stock" : "Add to cart"}
                       >
                         <ShoppingCart className="h-3 w-3" />
                       </Button>
                     </div>
                     {product.stockQuantity !== undefined && (
-                      <p className="text-xs text-gray-500 mt-1">
-                        Stock: {product.stockQuantity}
+                      <p className={`text-xs mt-1 ${product.stockQuantity <= 0 ? 'text-red-500' : product.stockQuantity < 5 ? 'text-orange-500' : 'text-gray-500'}`}>
+                        {product.stockQuantity === 0 ? 'Out of stock' : product.stockQuantity < 5 ? `Low stock: ${product.stockQuantity}` : `Stock: ${product.stockQuantity}`}
                       </p>
                     )}
                   </div>

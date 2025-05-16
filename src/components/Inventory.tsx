@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '@/types';
 import { 
   Table, 
@@ -33,31 +33,104 @@ export const Inventory: React.FC<InventoryProps> = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
+  const [sortField, setSortField] = useState<keyof Product | null>(null);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Extract unique categories
   const categories = [...new Set(products.map(product => product.category))].filter(Boolean) as string[];
   
-  // Filter products based on search term and category
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = 
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (product.sku && product.sku.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (product.barcode && product.barcode.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    const matchesCategory = !categoryFilter || product.category === categoryFilter;
-    
-    return matchesSearch && matchesCategory;
-  });
+  // Sort and filter products based on search term, category, and sort field
+  const filteredProducts = products
+    .filter(product => {
+      const matchesSearch = 
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (product.sku && product.sku.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (product.barcode && product.barcode.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesCategory = !categoryFilter || product.category === categoryFilter;
+      
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      if (!sortField) return 0;
+      
+      const aValue = a[sortField];
+      const bValue = b[sortField];
+      
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortDirection === 'asc' 
+          ? aValue.localeCompare(bValue) 
+          : bValue.localeCompare(aValue);
+      }
+      
+      if (typeof aValue === 'number' && typeof bValue === 'number') {
+        return sortDirection === 'asc' 
+          ? aValue - bValue 
+          : bValue - aValue;
+      }
+      
+      return 0;
+    });
 
+  // Handle sort toggle
+  const handleSort = (field: keyof Product) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Check for low stock items and alert
+  useEffect(() => {
+    const lowStockThreshold = 5;
+    const lowStockProducts = products.filter(p => 
+      p.stockQuantity !== undefined && 
+      p.stockQuantity > 0 && 
+      p.stockQuantity <= lowStockThreshold
+    );
+    
+    const outOfStockProducts = products.filter(p => 
+      p.stockQuantity !== undefined && 
+      p.stockQuantity === 0
+    );
+    
+    // Alert for low stock items (limit to 3 to avoid too many alerts)
+    lowStockProducts.slice(0, 3).forEach(product => {
+      voiceAssistant.speakLowStockWarning(product.name, product.stockQuantity || 0);
+    });
+    
+    // Alert for out of stock items (limit to 3)
+    outOfStockProducts.slice(0, 3).forEach(product => {
+      voiceAssistant.speakOutOfStock(product.name);
+    });
+  }, []);
+  
+  // Provide detailed voice guidance when the component loads
   React.useEffect(() => {
-    // Provide an overview of the inventory page when it loads
+    // Provide an overview of the inventory table
     const timer = setTimeout(() => {
-      voiceAssistant.speakInventoryPage();
-    }, 1000);
+      voiceAssistant.speakInventoryTableDetails();
+      voiceAssistant.speakInventoryFilterDetails();
+    }, 2000);
     
     return () => clearTimeout(timer);
   }, []);
+
+  // Speak guidance when filter is used
+  useEffect(() => {
+    if (searchTerm) {
+      voiceAssistant.speakProductSearch();
+    }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (categoryFilter) {
+      voiceAssistant.speakCategoryFilter();
+    }
+  }, [categoryFilter]);
 
   return (
     <div className="space-y-4">
@@ -65,7 +138,10 @@ export const Inventory: React.FC<InventoryProps> = ({
         <h2 className="text-3xl font-bold tracking-tight flex items-center">
           <Package className="h-6 w-6 mr-2" /> Inventory Management
         </h2>
-        <Button onClick={onAddProduct} className="bg-indigo-600 hover:bg-indigo-700">
+        <Button 
+          onClick={onAddProduct} 
+          className="bg-indigo-600 hover:bg-indigo-700"
+        >
           <Plus className="h-4 w-4 mr-2" /> Add Product
         </Button>
       </div>
@@ -100,76 +176,116 @@ export const Inventory: React.FC<InventoryProps> = ({
         <TableCaption>Inventory as of {new Date().toLocaleDateString()}</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>Product Name</TableHead>
-            <TableHead>SKU</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead className="text-right">Price</TableHead>
-            <TableHead className="text-right">Cost</TableHead>
+            <TableHead 
+              className="cursor-pointer hover:bg-gray-50" 
+              onClick={() => handleSort('name')}
+            >
+              Product Name {sortField === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer hover:bg-gray-50" 
+              onClick={() => handleSort('sku')}
+            >
+              SKU {sortField === 'sku' && (sortDirection === 'asc' ? '▲' : '▼')}
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer hover:bg-gray-50" 
+              onClick={() => handleSort('category')}
+            >
+              Category {sortField === 'category' && (sortDirection === 'asc' ? '▲' : '▼')}
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer hover:bg-gray-50 text-right" 
+              onClick={() => handleSort('price')}
+            >
+              Price {sortField === 'price' && (sortDirection === 'asc' ? '▲' : '▼')}
+            </TableHead>
+            <TableHead 
+              className="cursor-pointer hover:bg-gray-50 text-right" 
+              onClick={() => handleSort('cost')}
+            >
+              Cost {sortField === 'cost' && (sortDirection === 'asc' ? '▲' : '▼')}
+            </TableHead>
             <TableHead className="text-right">Profit</TableHead>
-            <TableHead className="text-right">Stock</TableHead>
+            <TableHead 
+              className="cursor-pointer hover:bg-gray-50 text-right" 
+              onClick={() => handleSort('stockQuantity')}
+            >
+              Stock {sortField === 'stockQuantity' && (sortDirection === 'asc' ? '▲' : '▼')}
+            </TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredProducts.map((product) => {
-            const profit = product.cost ? product.price - product.cost : undefined;
-            const profitMargin = profit && product.price ? (profit / product.price * 100).toFixed(1) : undefined;
-            
-            return (
-              <TableRow key={product.id}>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell>{product.sku || '-'}</TableCell>
-                <TableCell>{product.category || '-'}</TableCell>
-                <TableCell className="text-right">${product.price.toFixed(2)}</TableCell>
-                <TableCell className="text-right">${product.cost?.toFixed(2) || '-'}</TableCell>
-                <TableCell className="text-right">
-                  {profit !== undefined ? `$${profit.toFixed(2)} (${profitMargin}%)` : '-'}
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => onUpdateStock(product.id, (product.stockQuantity || 0) - 1)}
-                      disabled={(product.stockQuantity || 0) <= 0}
-                    >
-                      -
-                    </Button>
-                    <span className="w-10 text-center">{product.stockQuantity || 0}</span>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-6 w-6"
-                      onClick={() => onUpdateStock(product.id, (product.stockQuantity || 0) + 1)}
-                    >
-                      +
-                    </Button>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={() => onEditProduct?.(product)}
-                    >
-                      <Edit className="h-3.5 w-3.5" />
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="icon"
-                      className="h-7 w-7"
-                      onClick={() => onDeleteProduct?.(product.id)}
-                    >
-                      <Trash className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
+          {filteredProducts.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={8} className="text-center py-8">
+                No products found matching your search criteria
+              </TableCell>
+            </TableRow>
+          ) : (
+            filteredProducts.map((product) => {
+              const profit = product.cost ? product.price - product.cost : undefined;
+              const profitMargin = profit && product.price ? (profit / product.price * 100).toFixed(1) : undefined;
+              
+              return (
+                <TableRow key={product.id} className={product.stockQuantity === 0 ? 'bg-red-50' : (product.stockQuantity && product.stockQuantity < 5 ? 'bg-yellow-50' : '')}>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell>{product.sku || '-'}</TableCell>
+                  <TableCell>{product.category || '-'}</TableCell>
+                  <TableCell className="text-right">${product.price.toFixed(2)}</TableCell>
+                  <TableCell className="text-right">${product.cost?.toFixed(2) || '-'}</TableCell>
+                  <TableCell className="text-right">
+                    {profit !== undefined ? `$${profit.toFixed(2)} (${profitMargin}%)` : '-'}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => onUpdateStock(product.id, (product.stockQuantity || 0) - 1)}
+                        disabled={(product.stockQuantity || 0) <= 0}
+                      >
+                        -
+                      </Button>
+                      <span className={`w-10 text-center ${product.stockQuantity === 0 ? 'text-red-600 font-bold' : (product.stockQuantity && product.stockQuantity < 5 ? 'text-yellow-600 font-bold' : '')}`}>
+                        {product.stockQuantity || 0}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => onUpdateStock(product.id, (product.stockQuantity || 0) + 1)}
+                      >
+                        +
+                      </Button>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => onEditProduct?.(product)}
+                      >
+                        <Edit className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() => onDeleteProduct?.(product.id)}
+                      >
+                        <Trash className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          )}
         </TableBody>
       </Table>
     </div>
