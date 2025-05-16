@@ -46,7 +46,7 @@ export const ShopSelector = () => {
                 {shops.map((shop) => (
                   <CommandItem
                     key={shop.id}
-                    value={shop.name}
+                    value={shop.name || `shop-${shop.id}`}
                     onSelect={() => {
                       setCurrentShop(shop);
                       setOpen(false);
