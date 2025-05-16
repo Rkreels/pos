@@ -1,14 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
-import { Product, SalesData, User } from '@/types';
+import { Product, SalesData } from '@/types';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { MainNavigation } from '@/components/MainNavigation';
-import { Dashboard } from '@/components/Dashboard';
-import MasterManagerDashboard from '@/components/MasterManagerDashboard';
 import { productData } from '@/data/products';
 import { useShop } from '@/context/ShopContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Store } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import { DashboardSelector } from '@/components/DashboardSelector';
 
 const sampleSalesData: SalesData[] = [
   { date: 'Jan 1', sales: 4000, transactions: 24 },
@@ -34,21 +34,11 @@ const sampleRecentActivity = [
   { id: '4', action: 'Daily sales report generated', time: '2 hours ago' },
 ];
 
-// Mock current user - In a real application, this would come from an auth context
-const currentUser: User = {
-  id: '5',
-  name: 'Mark Master',
-  email: 'mark@example.com',
-  role: 'master',
-  status: 'active',
-  lastLogin: '2025-04-29 08:00',
-  managedShops: ['1', '2', '3']
-};
-
 const Index = () => {
   const [products, setProducts] = useState<Product[]>(productData);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { currentShop, shops } = useShop();
+  const { currentShop } = useShop();
+  const { currentUser } = useAuth();
   
   useEffect(() => {
     // Clear any previous speech and start new explanation after a slight delay
@@ -56,29 +46,21 @@ const Index = () => {
     
     // Speak page overview when the page loads
     const timer = setTimeout(() => {
-      if (currentUser.role === 'master') {
-        voiceAssistant.speakMasterDashboard();
-      } else {
-        voiceAssistant.speakPageOverview();
-        voiceAssistant.speakRoleOverview(currentUser.role);
-      }
+      voiceAssistant.speakDashboardOverview(currentUser.role);
     }, 800);
     
     return () => {
       clearTimeout(timer);
       voiceAssistant.stopSpeaking();
     };
-  }, []);
+  }, [currentUser.role]);
 
   useEffect(() => {
     // When shop changes, announce it
     if (currentShop) {
-      voiceAssistant.speakShopSwitched(currentShop.name);
+      voiceAssistant.speak(`You are now viewing data for ${currentShop.name}. All dashboard information has been updated accordingly.`);
     }
   }, [currentShop?.id]);
-
-  // Determine whether to show master dashboard or regular dashboard
-  const showMasterDashboard = currentUser.role === 'master' && currentUser.managedShops && currentUser.managedShops.length > 0;
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -88,9 +70,9 @@ const Index = () => {
         <header className="bg-white shadow-sm py-4 px-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-gray-800">
-              {showMasterDashboard ? 'Master Manager Dashboard' : 'Dashboard'}
+              {currentUser.role === 'master' ? 'Master Manager Dashboard' : 'Dashboard'}
             </h1>
-            {currentShop && !showMasterDashboard && (
+            {currentShop && currentUser.role !== 'master' && (
               <Card className="border-0 shadow-none bg-transparent">
                 <CardContent className="p-0 flex items-center">
                   <Store className="h-4 w-4 mr-2" />
@@ -104,31 +86,14 @@ const Index = () => {
         </header>
         
         <main className="flex-1 overflow-y-auto p-6">
-          {showMasterDashboard ? (
-            <MasterManagerDashboard 
-              userId={currentUser.id} 
-              managedShopIds={currentUser.managedShops || []} 
-            />
-          ) : (
-            !currentShop ? (
-              <div className="flex flex-col items-center justify-center h-full">
-                <Store className="h-16 w-16 text-gray-400 mb-4" />
-                <h2 className="text-2xl font-bold text-gray-700 mb-2">No Shop Selected</h2>
-                <p className="text-gray-500 mb-4">Please select a shop from the sidebar to view dashboard data.</p>
-                <p className="text-gray-500">You can manage your shops by going to the Shops page.</p>
-              </div>
-            ) : (
-              <Dashboard 
-                totalSales={12458.99}
-                totalOrders={142}
-                totalCustomers={64}
-                totalProducts={products.length}
-                salesData={sampleSalesData}
-                topSellingProducts={sampleTopSellingProducts}
-                recentActivity={sampleRecentActivity}
-              />
-            )
-          )}
+          <DashboardSelector
+            currentUser={currentUser}
+            currentShop={currentShop}
+            products={products}
+            sampleSalesData={sampleSalesData}
+            sampleTopSellingProducts={sampleTopSellingProducts}
+            sampleRecentActivity={sampleRecentActivity}
+          />
         </main>
       </div>
     </div>

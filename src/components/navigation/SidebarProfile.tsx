@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { RocketIcon, LogOut } from 'lucide-react';
 import { RoleSelector } from '@/components/RoleSelector';
 import { useNavigate } from 'react-router-dom';
+import { voiceAssistant } from '@/services/VoiceAssistant';
 
 interface SidebarProfileProps {
   isSidebarExpanded: boolean;
@@ -15,8 +16,14 @@ export const SidebarProfile: React.FC<SidebarProfileProps> = ({ isSidebarExpande
   const navigate = useNavigate();
   
   const handleLogout = () => {
+    voiceAssistant.speak("You are now logging out. Thank you for using our system.");
     logout();
     navigate('/');
+  };
+  
+  const handleSettings = () => {
+    voiceAssistant.speak("Navigating to your account settings page.");
+    navigate('/settings');
   };
   
   return (
@@ -40,7 +47,7 @@ export const SidebarProfile: React.FC<SidebarProfileProps> = ({ isSidebarExpande
                 variant="ghost" 
                 size="sm" 
                 className="w-1/2"
-                onClick={() => navigate('/settings')}
+                onClick={handleSettings}
               >
                 <RocketIcon className="h-4 w-4 mr-1" /> Account
               </Button>
@@ -55,12 +62,12 @@ export const SidebarProfile: React.FC<SidebarProfileProps> = ({ isSidebarExpande
             </div>
           </>
         ) : (
-          <div className="flex flex-col items-center gap-2">
+          <div className="flex flex-col items-center gap-2 py-2">
             <Button 
               variant="ghost" 
               size="icon"
               className="h-8 w-8"
-              onClick={() => navigate('/settings')}
+              onClick={handleSettings}
             >
               <RocketIcon className="h-4 w-4" />
             </Button>

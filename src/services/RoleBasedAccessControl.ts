@@ -103,7 +103,7 @@ class RoleBasedAccessControl {
   }
 
   getDefaultPermissions(role: string): UserPermissions {
-    return this.defaultPermissions[role] || this.defaultPermissions.cashier;
+    return this.defaultPermissions[role as keyof typeof this.defaultPermissions] || this.defaultPermissions.cashier;
   }
 
   hasPermission(user: User, module: keyof UserPermissions, action: string): boolean {
@@ -112,7 +112,7 @@ class RoleBasedAccessControl {
     
     if (!modulePermissions) return false;
     
-    return modulePermissions[action as keyof typeof modulePermissions] || false;
+    return (modulePermissions as Record<string, boolean>)[action] || false;
   }
 
   getRouteAccess(user: User): Record<string, boolean> {

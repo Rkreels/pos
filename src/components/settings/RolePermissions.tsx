@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { rbac } from '@/services/RoleBasedAccessControl';
 import { UserPermissions } from '@/types';
@@ -10,6 +9,8 @@ import { RolePermissionsHeader } from './permissions/RolePermissionsHeader';
 import { RoleSelector } from './permissions/RoleSelector';
 import { PermissionGroups } from './permissions/PermissionGroups';
 import { RoleNote } from './permissions/RoleNote';
+import { PermissionActions } from './permissions/PermissionActions';
+import { voiceAssistant } from '@/services/VoiceAssistant';
 
 export const RolePermissions: React.FC = () => {
   const [activeRole, setActiveRole] = useState<'admin' | 'master' | 'manager' | 'cashier'>('admin');
@@ -18,6 +19,7 @@ export const RolePermissions: React.FC = () => {
   // Load default permissions for the selected role
   useEffect(() => {
     setPermissions(rbac.getUserPermissions({ role: activeRole } as any));
+    voiceAssistant.speak(`Now viewing permissions for ${activeRole} role. You can modify access levels for different system functions.`);
   }, [activeRole]);
 
   // Handle permission toggle
@@ -33,6 +35,9 @@ export const RolePermissions: React.FC = () => {
       }
       return newPermissions;
     });
+    
+    const actionText = value ? "granted" : "removed";
+    voiceAssistant.speak(`${action} permission for ${module} has been ${actionText}.`);
   };
 
   // Save permission changes
@@ -55,11 +60,11 @@ export const RolePermissions: React.FC = () => {
               onToggle={handlePermissionToggle} 
             />
             
-            <div className="flex justify-end mt-6">
-              <Button onClick={handleSavePermissions}>
-                Save {activeRole.charAt(0).toUpperCase() + activeRole.slice(1)} Permissions
-              </Button>
-            </div>
+            <PermissionActions 
+              activeRole={activeRole}
+              permissions={permissions}
+              handleSavePermissions={handleSavePermissions}
+            />
             
             <RoleNote role={activeRole} />
           </TabsContent>
