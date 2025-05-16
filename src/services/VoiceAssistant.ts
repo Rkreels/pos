@@ -1,4 +1,3 @@
-
 // This class provides voice guidance for the POS system
 class VoiceAssistant {
   private speech: SpeechSynthesisUtterance | null = null;
@@ -104,6 +103,14 @@ class VoiceAssistant {
     } else {
       this.speak("Welcome to your dashboard. Here you can see key performance metrics for your business. Your access is tailored to your specific role.");
     }
+  }
+
+  speakPageOverview() {
+    this.speak("Welcome to the dashboard. Here you can see an overview of your business performance, recent transactions, inventory status, and access to key features. Use the sidebar menu to navigate to specific areas of the system.");
+  }
+
+  speakShopSwitched(shopName: string) {
+    this.speak(`You are now viewing data for ${shopName}. All dashboard information has been updated accordingly.`);
   }
 
   speakRoleOverview(role: string) {
