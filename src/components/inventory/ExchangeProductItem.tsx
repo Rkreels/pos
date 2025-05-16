@@ -46,12 +46,11 @@ export const ExchangeProductItem: React.FC<ExchangeProductItemProps> = ({
               <SelectValue placeholder="Select product" />
             </SelectTrigger>
             <SelectContent>
-              {/* Add a placeholder option with a non-empty value */}
               <SelectItem key="placeholder" value="select-product">
                 Select a product
               </SelectItem>
               {products.map((product) => (
-                <SelectItem key={product.id} value={product.id}>
+                <SelectItem key={product.id} value={product.id || `product-${index}`}>
                   {product.name} {!isRequestMode && `(${product.stockQuantity} in stock)`}
                 </SelectItem>
               ))}

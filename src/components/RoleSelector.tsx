@@ -32,7 +32,7 @@ export const RoleSelector: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-1 z-50">
-      <Select value={currentUser.id} onValueChange={handleUserChange}>
+      <Select value={currentUser.id || "select-user"} onValueChange={handleUserChange}>
         <SelectTrigger className="w-full h-8 text-xs max-w-[180px]">
           <div className="flex items-center gap-2 truncate">
             <span className="truncate max-w-[100px]">{currentUser.name}</span>
