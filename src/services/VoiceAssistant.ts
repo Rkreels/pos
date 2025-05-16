@@ -129,7 +129,7 @@ class VoiceAssistant {
         this.speak("You are now using the system as a Cashier. You can process sales transactions, manage the checkout process, and help customers with basic inquiries. Your interface is optimized for quick transaction processing with real-time inventory validation.");
         break;
       default:
-        this.speak(`You are currently using the system as a ${role}. Your permissions are adjusted according to your role, with appropriate data access and functionality.");
+        this.speak(`You are currently using the system as a ${role}. Your permissions are adjusted according to your role, with appropriate data access and functionality.`);
     }
   }
 
