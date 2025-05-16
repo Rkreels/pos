@@ -134,7 +134,7 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
                   Select a shop
                 </SelectItem>
                 {otherShops.map((shop) => (
-                  <SelectItem key={shop.id} value={shop.id || `shop-${shop.name}`}>
+                  <SelectItem key={shop.id} value={shop.id || `shop-${shop.name.replace(/\s+/g, '-').toLowerCase()}`}>
                     {shop.name}
                   </SelectItem>
                 ))}

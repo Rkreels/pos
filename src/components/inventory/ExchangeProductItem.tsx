@@ -31,7 +31,7 @@ export const ExchangeProductItem: React.FC<ExchangeProductItemProps> = ({
   onProductChange,
   onQuantityChange
 }) => {
-  // Ensure product id is never an empty string
+  // Ensure product id is never an empty string - use a placeholder value
   const productId = item.productId || "select-product";
 
   return (
