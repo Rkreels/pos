@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { MainNavigation } from '@/components/MainNavigation';
 import { Supplier } from '@/types';
@@ -118,11 +117,8 @@ const SuppliersPage: React.FC = () => {
   };
 
   // Get product names for supplier's products
-  const getProductNamesForSupplier = (productIds: string[] = []) => {
-    return productIds.map(id => {
-      const product = productData.find(p => p.id === id);
-      return product ? product.name : 'Unknown Product';
-    }).join(', ');
+  const getProductNamesForSupplier = (products: ProductReference[] = []) => {
+    return products.map(product => product.name).join(', ');
   };
 
   return (
