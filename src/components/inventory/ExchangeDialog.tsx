@@ -130,12 +130,11 @@ export const ExchangeDialog: React.FC<ExchangeDialogProps> = ({
                 <SelectValue placeholder="Select shop" />
               </SelectTrigger>
               <SelectContent>
-                {/* Add a placeholder option with a non-empty value */}
                 <SelectItem key="placeholder" value="select-shop">
                   Select a shop
                 </SelectItem>
                 {otherShops.map((shop) => (
-                  <SelectItem key={shop.id} value={shop.id}>
+                  <SelectItem key={shop.id} value={shop.id || `shop-${shop.name}`}>
                     {shop.name}
                   </SelectItem>
                 ))}
