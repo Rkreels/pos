@@ -41,7 +41,7 @@ export const RoleSelector: React.FC = () => {
         </SelectTrigger>
         <SelectContent>
           {userList.map((user) => (
-            <SelectItem key={user.id} value={user.id || `user-${user.name}`}>
+            <SelectItem key={user.id || `user-${user.name}`} value={user.id || `user-${user.name.replace(/\s+/g, '-').toLowerCase()}`}>
               <div className="flex items-center gap-2">
                 <span>{user.name}</span>
                 {user.role && roleBadges[user.role as keyof typeof roleBadges]}

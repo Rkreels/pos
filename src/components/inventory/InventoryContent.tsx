@@ -36,7 +36,7 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
   newCategory,
   setNewCategory
 }) => {
-  // Extract unique categories from products
+  // Extract unique categories from products - ensure we don't have empty categories
   const categories = [...new Set(products.map(product => product.category))].filter(Boolean);
   
   // Sample product images for new products
@@ -133,8 +133,8 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
             ? { 
                 ...p, 
                 ...newProduct,
-                category: finalCategory,
-                image: productImage
+                category: finalCategory || p.category,
+                image: productImage || p.image
               }
             : p
         )
@@ -145,7 +145,7 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
       // Add new product
       const productToAdd = {
         ...newProduct,
-        category: finalCategory,
+        category: finalCategory || "Uncategorized",
         id: `p${Date.now()}`, // Simple ID generation with prefix
         image: productImage
       } as Product;

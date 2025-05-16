@@ -51,7 +51,7 @@ export const ExchangeProductItem: React.FC<ExchangeProductItemProps> = ({
               </SelectItem>
               {products.map((product) => (
                 <SelectItem 
-                  key={product.id} 
+                  key={product.id || `product-${index}-${Date.now()}`} 
                   value={product.id || `product-${index}-${product.name.replace(/\s+/g, '-').toLowerCase()}`}
                 >
                   {product.name} {!isRequestMode && product.stockQuantity !== undefined && `(${product.stockQuantity} in stock)`}

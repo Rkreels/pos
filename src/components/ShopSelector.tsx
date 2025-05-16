@@ -45,7 +45,7 @@ export const ShopSelector = () => {
               <CommandGroup>
                 {shops.map((shop) => (
                   <CommandItem
-                    key={shop.id}
+                    key={shop.id || `shop-id-${shop.name}`}
                     value={shop.name || `shop-${shop.id}`}
                     onSelect={() => {
                       setCurrentShop(shop);
