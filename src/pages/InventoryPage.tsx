@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MainNavigation } from '@/components/MainNavigation';
 import { Inventory } from '@/components/Inventory';
 import { InventoryExchange } from '@/components/InventoryExchange';
@@ -9,10 +9,9 @@ import { voiceAssistant } from '@/services/VoiceAssistant';
 import { productData } from '@/data/products';
 import { supplierData } from '@/data/suppliers';
 import { useShop } from '@/context/ShopContext'; 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { ProductForm } from '@/components/inventory/ProductForm';
-import { Plus } from 'lucide-react';
+import { InventoryHeader } from '@/components/inventory/InventoryHeader';
+import { NoShopSelected } from '@/components/inventory/NoShopSelected';
+import { ProductDialog } from '@/components/inventory/ProductDialog';
 
 const InventoryPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(productData);
@@ -29,9 +28,9 @@ const InventoryPage: React.FC = () => {
   });
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newCategory, setNewCategory] = useState('');
-  const { currentShop } = useShop(); // Get current shop
+  const { currentShop } = useShop();
   
-  React.useEffect(() => {
+  useEffect(() => {
     // Speak page overview when the page loads
     const timer = setTimeout(() => {
       voiceAssistant.speakInventoryPage();
@@ -90,7 +89,6 @@ const InventoryPage: React.FC = () => {
     });
     setNewCategory('');
     setIsDialogOpen(true);
-    voiceAssistant.speakAddProduct();
   };
 
   const handleEditProduct = (product: Product) => {
@@ -98,7 +96,6 @@ const InventoryPage: React.FC = () => {
     setNewProduct({...product});
     setNewCategory('');
     setIsDialogOpen(true);
-    voiceAssistant.speakEditProduct();
   };
 
   const handleDeleteProduct = (productId: string) => {
@@ -164,12 +161,7 @@ const InventoryPage: React.FC = () => {
       <MainNavigation />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white shadow-sm py-4 px-6">
-          <h1 className="text-2xl font-bold text-gray-800">
-            Inventory Management
-            {currentShop && <span className="text-base font-normal ml-2">({currentShop.name})</span>}
-          </h1>
-        </header>
+        <InventoryHeader currentShop={currentShop} />
         
         <main className="flex-1 overflow-y-auto p-6">
           {currentShop ? (
@@ -185,39 +177,21 @@ const InventoryPage: React.FC = () => {
               />
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center h-64 border rounded-lg">
-              <p className="text-xl mb-4">Please select a shop to view inventory</p>
-              <Button variant="outline" onClick={() => toast.info("Please select a shop from the shop selector")}>
-                Select Shop
-              </Button>
-            </div>
+            <NoShopSelected />
           )}
           
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="sm:max-w-[600px]">
-              <DialogHeader>
-                <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
-                <DialogDescription>
-                  {editingProduct 
-                    ? 'Update the details of your product.' 
-                    : 'Add a new product to your inventory.'}
-                </DialogDescription>
-              </DialogHeader>
-              
-              <ProductForm
-                newProduct={newProduct}
-                setNewProduct={setNewProduct}
-                newCategory={newCategory}
-                setNewCategory={setNewCategory}
-                categories={categories}
-                suppliers={supplierData}
-                isDialogOpen={isDialogOpen}
-                setIsDialogOpen={setIsDialogOpen}
-                handleSaveProduct={handleSaveProduct}
-                editingProduct={editingProduct}
-              />
-            </DialogContent>
-          </Dialog>
+          <ProductDialog
+            isDialogOpen={isDialogOpen}
+            setIsDialogOpen={setIsDialogOpen}
+            newProduct={newProduct}
+            setNewProduct={setNewProduct}
+            newCategory={newCategory}
+            setNewCategory={setNewCategory}
+            categories={categories}
+            suppliers={supplierData}
+            handleSaveProduct={handleSaveProduct}
+            editingProduct={editingProduct}
+          />
         </main>
       </div>
     </div>

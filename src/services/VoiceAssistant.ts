@@ -1,13 +1,51 @@
-
 // This class provides voice guidance for the POS system
-
 class VoiceAssistant {
+  private speech: SpeechSynthesisUtterance | null = null;
+  private isMuted: boolean = false;
+  
+  constructor() {
+    // Initialize speech synthesis if available
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      this.speech = new SpeechSynthesisUtterance();
+      this.speech.rate = 1.0;
+      this.speech.pitch = 1.0;
+      this.speech.volume = 1.0;
+    }
+  }
+  
+  toggleMute() {
+    this.isMuted = !this.isMuted;
+    return this.isMuted;
+  }
+  
+  setVolume(volume: number) {
+    if (this.speech) {
+      this.speech.volume = Math.max(0, Math.min(1, volume));
+    }
+  }
+
   speak(message: string) {
     console.log(`Voice Assistant: ${message}`);
+    
+    if (this.isMuted) return;
+    
+    if (this.speech && 'speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      // Set the new message
+      this.speech.text = message;
+      
+      // Speak the message
+      window.speechSynthesis.speak(this.speech);
+    }
   }
 
   stopSpeaking() {
     console.log("Voice Assistant: Stopped speaking");
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
   }
 
   speakPageOverview() {
@@ -74,7 +112,6 @@ class VoiceAssistant {
     this.speak("You can use the inventory exchange feature to request or send products between your shops. This helps manage stock levels across all your locations.");
   }
 
-  // Add missing methods for voice assistance
   speakCartEmpty() {
     this.speak("Your cart is currently empty. Add products to begin a transaction.");
   }

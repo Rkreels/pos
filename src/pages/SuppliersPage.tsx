@@ -1,25 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MainNavigation } from '@/components/MainNavigation';
-import { Supplier } from '@/types';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
-} from '@/components/ui/table';
-import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Search, UserPlus, Mail, Phone, Truck, Plus } from 'lucide-react';
+import { Supplier, ProductReference } from '@/types'; // Added ProductReference import
+import { useShop } from '@/context/ShopContext';
+import { supplierData } from '@/data/suppliers';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { supplierData } from '@/data/suppliers';
-import { productData } from '@/data/products';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Input } from '@/components/ui/input';
+import { Search, UserPlus, Mail, Phone, Truck, Plus } from 'lucide-react';
 
 const SuppliersPage: React.FC = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>(supplierData);
