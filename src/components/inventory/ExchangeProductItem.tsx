@@ -31,8 +31,8 @@ export const ExchangeProductItem: React.FC<ExchangeProductItemProps> = ({
   onProductChange,
   onQuantityChange
 }) => {
-  // Ensure product id is never an empty string - use a placeholder value
-  const productId = item.productId || "select-product";
+  // Ensure we have a valid product ID or use placeholder
+  const productId = item.productId || `placeholder-${index}`;
 
   return (
     <div className="flex items-center gap-2 p-2 border rounded-md">
@@ -40,19 +40,19 @@ export const ExchangeProductItem: React.FC<ExchangeProductItemProps> = ({
         <div className="flex gap-2">
           <Select
             value={productId}
-            onValueChange={(value) => onProductChange(index, value === "select-product" ? "" : value)}
+            onValueChange={(value) => onProductChange(index, value.startsWith('placeholder-') ? "" : value)}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select product" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem key="placeholder" value="select-product">
+              <SelectItem value={`placeholder-${index}`}>
                 Select a product
               </SelectItem>
-              {products.map((product) => (
+              {products.filter(product => product.id && product.name).map((product) => (
                 <SelectItem 
-                  key={product.id || `product-${index}-${Date.now()}`} 
-                  value={product.id || `product-${index}-${product.name.replace(/\s+/g, '-').toLowerCase()}`}
+                  key={product.id} 
+                  value={product.id}
                 >
                   {product.name} {!isRequestMode && product.stockQuantity !== undefined && `(${product.stockQuantity} in stock)`}
                 </SelectItem>
@@ -67,7 +67,7 @@ export const ExchangeProductItem: React.FC<ExchangeProductItemProps> = ({
               type="number"
               min="1"
               value={item.quantity}
-              onChange={(e) => onQuantityChange(index, parseInt(e.target.value) || 1)}
+              onChange={(e) => onQuantityChange(index, Math.max(1, parseInt(e.target.value) || 1))}
               className="w-20"
             />
           </div>

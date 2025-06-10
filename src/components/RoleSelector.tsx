@@ -23,6 +23,8 @@ export const RoleSelector: React.FC = () => {
   };
 
   const handleUserChange = (userId: string) => {
+    if (userId === "no-user-selected") return;
+    
     const selectedUser = userList.find(user => user.id === userId);
     if (selectedUser) {
       setCurrentUser(selectedUser);
@@ -30,9 +32,12 @@ export const RoleSelector: React.FC = () => {
     }
   };
 
+  // Ensure current user has a valid ID
+  const currentUserId = currentUser.id || "no-user-selected";
+
   return (
     <div className="flex flex-col gap-1 z-50">
-      <Select value={currentUser.id || "select-user"} onValueChange={handleUserChange}>
+      <Select value={currentUserId} onValueChange={handleUserChange}>
         <SelectTrigger className="w-full h-8 text-xs max-w-[180px]">
           <div className="flex items-center gap-2 truncate">
             <span className="truncate max-w-[100px]">{currentUser.name}</span>
@@ -40,8 +45,9 @@ export const RoleSelector: React.FC = () => {
           </div>
         </SelectTrigger>
         <SelectContent>
-          {userList.map((user) => (
-            <SelectItem key={user.id || `user-${user.name}`} value={user.id || `user-${user.name.replace(/\s+/g, '-').toLowerCase()}`}>
+          <SelectItem value="no-user-selected">Select User</SelectItem>
+          {userList.filter(user => user.id && user.name).map((user) => (
+            <SelectItem key={user.id} value={user.id}>
               <div className="flex items-center gap-2">
                 <span>{user.name}</span>
                 {user.role && roleBadges[user.role as keyof typeof roleBadges]}

@@ -37,7 +37,7 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
   setNewCategory
 }) => {
   // Extract unique categories from products - ensure we don't have empty categories
-  const categories = [...new Set(products.map(product => product.category))].filter(Boolean);
+  const categories = [...new Set(products.map(product => product.category).filter(Boolean))];
   
   // Sample product images for new products
   const sampleImages = [
@@ -52,6 +52,11 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
     'https://images.unsplash.com/photo-1606248897732-2c5ffe759c04?q=80&w=300',
     'https://images.unsplash.com/photo-1556695869-9774cba7957f?q=80&w=300',
   ];
+
+  // Generate a unique product ID
+  const generateProductId = () => {
+    return `product_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  };
 
   const handleUpdateStock = (productId: string, newQuantity: number) => {
     if (newQuantity < 0) return;
@@ -106,7 +111,7 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
   };
 
   const handleSaveProduct = () => {
-    if (!newProduct.name || newProduct.price === undefined || newProduct.price <= 0) {
+    if (!newProduct.name?.trim() || !newProduct.price || newProduct.price <= 0) {
       toast.error('Name and a valid price are required');
       voiceAssistant.speak("Please provide a product name and a valid price before saving.");
       return;
@@ -114,13 +119,13 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
 
     // Handle new category
     let finalCategory = newProduct.category;
-    if (newCategory) {
-      finalCategory = newCategory;
+    if (newCategory?.trim()) {
+      finalCategory = newCategory.trim();
     }
 
-    // Get a random image from the sample images
+    // Get a random image from the sample images if none provided
     let productImage = newProduct.image;
-    if (!productImage) {
+    if (!productImage?.trim()) {
       const randomIndex = Math.floor(Math.random() * sampleImages.length);
       productImage = sampleImages[randomIndex];
     }
@@ -133,8 +138,11 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
             ? { 
                 ...p, 
                 ...newProduct,
-                category: finalCategory || p.category,
-                image: productImage || p.image
+                category: finalCategory || "Uncategorized",
+                image: productImage || p.image,
+                name: newProduct.name?.trim() || p.name,
+                sku: newProduct.sku?.trim() || p.sku,
+                description: newProduct.description?.trim() || p.description
               }
             : p
         )
@@ -142,12 +150,18 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
       toast.success(`Updated ${newProduct.name}`);
       voiceAssistant.speak(`${newProduct.name} has been successfully updated in your inventory.`);
     } else {
-      // Add new product
+      // Add new product with guaranteed unique ID
       const productToAdd = {
         ...newProduct,
+        id: generateProductId(),
         category: finalCategory || "Uncategorized",
-        id: `p${Date.now()}`, // Simple ID generation with prefix
-        image: productImage
+        image: productImage,
+        name: newProduct.name?.trim() || "Unnamed Product",
+        sku: newProduct.sku?.trim() || "",
+        description: newProduct.description?.trim() || "",
+        stockQuantity: Math.max(0, newProduct.stockQuantity || 0),
+        price: Math.max(0, newProduct.price || 0),
+        cost: Math.max(0, newProduct.cost || 0)
       } as Product;
       
       setProducts(prevProducts => [...prevProducts, productToAdd]);

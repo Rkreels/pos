@@ -33,9 +33,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   handleSaveProduct,
   editingProduct
 }) => {
-  // Ensure we have safe values for dropdowns
-  const safeCategory = newProduct.category || "";
-  const safeSupplierId = newProduct.supplierId || "";
+  // Ensure safe values for dropdowns
+  const safeCategory = newProduct.category || "no-category-selected";
+  const safeSupplierId = newProduct.supplierId || "no-supplier-selected";
 
   return (
     <div className="grid gap-4 py-4">
@@ -49,6 +49,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           placeholder="Product name"
         />
       </div>
+      
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="price" className="text-right">Price ($)</Label>
         <Input
@@ -62,6 +63,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           placeholder="Selling price"
         />
       </div>
+      
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="cost" className="text-right">Cost ($)</Label>
         <Input
@@ -75,6 +77,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           placeholder="Purchase cost"
         />
       </div>
+      
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="sku" className="text-right">SKU</Label>
         <Input
@@ -110,11 +113,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         ) : (
           <div className="col-span-3 flex gap-2">
             <Select 
-              value={safeCategory || "no-category"} 
+              value={safeCategory} 
               onValueChange={(value) => {
-                if (value === "new") {
-                  setNewCategory('');
-                } else if (value === "no-category") {
+                if (value === "create-new-category") {
+                  setNewCategory('New Category');
+                } else if (value === "no-category-selected") {
                   setNewProduct({...newProduct, category: ''});
                 } else {
                   setNewProduct({...newProduct, category: value});
@@ -125,16 +128,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="no-category">Select a category</SelectItem>
-                {categories.map(category => (
+                <SelectItem value="no-category-selected">Select a category</SelectItem>
+                {categories.filter(Boolean).map(category => (
                   <SelectItem key={category} value={category}>
                     {category}
                   </SelectItem>
                 ))}
-                <SelectItem value="new">+ Add New Category</SelectItem>
+                <SelectItem value="create-new-category">+ Add New Category</SelectItem>
               </SelectContent>
             </Select>
-            {safeCategory && (
+            {safeCategory !== "no-category-selected" && (
               <Button 
                 variant="outline" 
                 onClick={() => setNewCategory('New Category')}
@@ -150,15 +153,15 @@ export const ProductForm: React.FC<ProductFormProps> = ({
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="supplier" className="text-right">Supplier</Label>
         <Select 
-          value={safeSupplierId || "no-supplier"} 
-          onValueChange={(value) => setNewProduct({...newProduct, supplierId: value === "no-supplier" ? "" : value})}
+          value={safeSupplierId} 
+          onValueChange={(value) => setNewProduct({...newProduct, supplierId: value === "no-supplier-selected" ? "" : value})}
         >
           <SelectTrigger className="col-span-3">
             <SelectValue placeholder="Select a supplier" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="no-supplier">No supplier</SelectItem>
-            {suppliers.map(supplier => (
+            <SelectItem value="no-supplier-selected">No supplier</SelectItem>
+            {suppliers.filter(supplier => supplier.id && supplier.name).map(supplier => (
               <SelectItem key={supplier.id} value={supplier.id}>
                 {supplier.name}
               </SelectItem>
@@ -174,11 +177,12 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           type="number"
           min="0"
           value={newProduct.stockQuantity || 0}
-          onChange={(e) => setNewProduct({...newProduct, stockQuantity: parseInt(e.target.value) || 0})}
+          onChange={(e) => setNewProduct({...newProduct, stockQuantity: Math.max(0, parseInt(e.target.value) || 0)})}
           className="col-span-3"
           placeholder="Initial stock quantity"
         />
       </div>
+      
       <div className="grid grid-cols-4 items-start gap-4">
         <Label htmlFor="description" className="text-right">Description</Label>
         <Textarea
@@ -190,6 +194,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
           placeholder="Product description"
         />
       </div>
+      
       <div className="grid grid-cols-4 items-center gap-4">
         <Label htmlFor="image" className="text-right">Image URL</Label>
         <Input
@@ -201,7 +206,6 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         />
       </div>
       
-      {/* Footer with action buttons */}
       <DialogFooter>
         <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
           Cancel

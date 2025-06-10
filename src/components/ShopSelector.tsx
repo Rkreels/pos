@@ -43,10 +43,10 @@ export const ShopSelector = () => {
             <CommandList>
               <CommandEmpty>No shops found.</CommandEmpty>
               <CommandGroup>
-                {shops.map((shop) => (
+                {shops.filter(shop => shop.id && shop.name).map((shop) => (
                   <CommandItem
-                    key={shop.id || `shop-id-${shop.name}`}
-                    value={shop.name || `shop-${shop.id}`}
+                    key={shop.id}
+                    value={shop.name}
                     onSelect={() => {
                       setCurrentShop(shop);
                       setOpen(false);
