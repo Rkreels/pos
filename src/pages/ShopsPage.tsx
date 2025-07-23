@@ -30,6 +30,8 @@ import { toast } from 'sonner';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 const ShopsPage: React.FC = () => {
   const { shops, refreshShops, currentShop, setCurrentShop } = useShop();
@@ -37,6 +39,7 @@ const ShopsPage: React.FC = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [newShop, setNewShop] = useState<Partial<Shop>>({
     name: '',
     address: '',
@@ -83,57 +86,68 @@ const ShopsPage: React.FC = () => {
     setIsDialogOpen(true);
   };
   
-  const handleSaveShop = () => {
+  const handleSaveShop = async () => {
     if (!newShop.name || !newShop.address) {
       toast.error('Name and address are required');
       return;
     }
 
-    if (selectedShop) {
-      // Update existing shop
-      const updatedShops = shops.map(shop => 
-        shop.id === selectedShop.id ? { ...shop, ...newShop } as Shop : shop
-      );
-      refreshShops();
-      toast.success(`Updated shop: ${newShop.name}`);
-      
-      // Update current shop if it's the one being edited
-      if (currentShop && currentShop.id === selectedShop.id) {
-        setCurrentShop({ ...currentShop, ...newShop } as Shop);
-      }
-    } else {
-      // Add new shop
-      const shopToAdd = {
-        ...newShop,
-        id: `shop-${Date.now()}`,
-        createdAt: new Date(),
-      } as Shop;
-      
-      refreshShops();
-      toast.success(`Added shop: ${newShop.name}`);
-    }
+    setIsLoading(true);
     
-    setIsDialogOpen(false);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      if (selectedShop) {
+        // Update existing shop
+        refreshShops();
+        toast.success(`Updated shop: ${newShop.name}`);
+        
+        // Update current shop if it's the one being edited
+        if (currentShop && currentShop.id === selectedShop.id) {
+          setCurrentShop({ ...currentShop, ...newShop } as Shop);
+        }
+      } else {
+        // Add new shop
+        refreshShops();
+        toast.success(`Added shop: ${newShop.name}`);
+      }
+      
+      setIsDialogOpen(false);
+    } catch (error) {
+      toast.error('Failed to save shop. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
   
-  const handleDeleteShop = () => {
+  const handleDeleteShop = async () => {
     if (selectedShop) {
-      // In a real app, we would call an API to delete the shop
-      refreshShops();
-      toast.success(`Deleted shop: ${selectedShop.name}`);
+      setIsLoading(true);
       
-      // If we're deleting the current shop, set another one as current
-      if (currentShop && currentShop.id === selectedShop.id) {
-        const remainingShops = shops.filter(shop => shop.id !== selectedShop.id);
-        if (remainingShops.length > 0) {
-          setCurrentShop(remainingShops[0]);
-        } else {
-          setCurrentShop(null);
+      try {
+        // Simulate API call delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        refreshShops();
+        toast.success(`Deleted shop: ${selectedShop.name}`);
+        
+        // If we're deleting the current shop, set another one as current
+        if (currentShop && currentShop.id === selectedShop.id) {
+          const remainingShops = shops.filter(shop => shop.id !== selectedShop.id);
+          if (remainingShops.length > 0) {
+            setCurrentShop(remainingShops[0]);
+          } else {
+            setCurrentShop(null);
+          }
         }
+      } catch (error) {
+        toast.error('Failed to delete shop. Please try again.');
+      } finally {
+        setIsLoading(false);
+        setIsDeleteDialogOpen(false);
+        setSelectedShop(null);
       }
-      
-      setIsDeleteDialogOpen(false);
-      setSelectedShop(null);
     }
   };
   
@@ -356,28 +370,31 @@ const ShopsPage: React.FC = () => {
                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="button" onClick={handleSaveShop}>
-                  {selectedShop ? 'Update' : 'Add'}
+                <Button 
+                  type="button" 
+                  onClick={handleSaveShop}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <LoadingSpinner size="sm" />
+                  ) : (
+                    selectedShop ? 'Update' : 'Add'
+                  )}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
           
           {/* Delete Confirmation Dialog */}
-          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete Shop</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure you want to delete {selectedShop?.name}? This action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteShop}>Delete</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <ConfirmDialog
+            isOpen={isDeleteDialogOpen}
+            onClose={() => setIsDeleteDialogOpen(false)}
+            onConfirm={handleDeleteShop}
+            title="Delete Shop"
+            description={`Are you sure you want to delete ${selectedShop?.name}? This action cannot be undone.`}
+            confirmText="Delete"
+            variant="destructive"
+          />
         </main>
       </div>
     </div>

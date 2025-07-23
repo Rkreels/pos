@@ -11,6 +11,7 @@ import { lazy, Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import { ShopProvider } from "./context/ShopContext";
 import { AuthProvider } from "./context/AuthContext";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Lazy loaded components for better performance
 const InventoryPage = lazy(() => import('./pages/InventoryPage'));
@@ -32,13 +33,14 @@ const queryClient = new QueryClient();
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <ShopProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AuthProvider>
+            <ShopProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/pos" element={<POSPage />} />
@@ -92,11 +94,12 @@ const App = () => {
                 />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </TooltipProvider>
-          </ShopProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+              </TooltipProvider>
+            </ShopProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 

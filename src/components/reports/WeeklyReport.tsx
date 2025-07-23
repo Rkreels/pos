@@ -48,7 +48,7 @@ interface WeeklyReportProps {
   onSpeak?: () => void;
 }
 
-export const WeeklyReport: React.FC<WeeklyReportProps> = ({ onSpeak }) => {
+export const WeeklyReport: React.FC<WeeklyReportProps> = ({ onSpeak = () => {} }) => {
   useEffect(() => {
     if (onSpeak) {
       const timer = setTimeout(() => {
@@ -115,7 +115,13 @@ export const WeeklyReport: React.FC<WeeklyReportProps> = ({ onSpeak }) => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip 
+                  formatter={(value, name) => [
+                    name === 'sales' ? `$${value.toLocaleString()}` : value,
+                    name === 'sales' ? 'Sales' : 'Transactions'
+                  ]}
+                  labelFormatter={(label) => `Date: ${label}`}
+                />
                 <Legend />
                 <Line 
                   type="monotone" 

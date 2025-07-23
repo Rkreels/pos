@@ -110,12 +110,16 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
     }
   };
 
-  const handleSaveProduct = () => {
+  const handleSaveProduct = async () => {
     if (!newProduct.name?.trim() || !newProduct.price || newProduct.price <= 0) {
       toast.error('Name and a valid price are required');
       voiceAssistant.speak("Please provide a product name and a valid price before saving.");
       return;
     }
+
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500));
 
     // Handle new category
     let finalCategory = newProduct.category;
@@ -169,7 +173,10 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
       voiceAssistant.speak(`${newProduct.name} has been successfully added to your inventory.`);
     }
     
-    setIsDialogOpen(false);
+      setIsDialogOpen(false);
+    } catch (error) {
+      toast.error('Failed to save product. Please try again.');
+    }
   };
 
   return (

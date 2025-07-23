@@ -52,7 +52,7 @@ interface YearlyReportProps {
   onSpeak?: () => void;
 }
 
-export const YearlyReport: React.FC<YearlyReportProps> = ({ onSpeak }) => {
+export const YearlyReport: React.FC<YearlyReportProps> = ({ onSpeak = () => {} }) => {
   useEffect(() => {
     if (onSpeak) {
       const timer = setTimeout(() => {
@@ -119,7 +119,10 @@ export const YearlyReport: React.FC<YearlyReportProps> = ({ onSpeak }) => {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip />
+                <Tooltip 
+                  formatter={(value) => [`$${value.toLocaleString()}`, 'Sales']}
+                  labelFormatter={(label) => `Month: ${label}`}
+                />
                 <Legend />
                 <Area 
                   type="monotone" 

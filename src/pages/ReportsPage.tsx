@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { WeeklyReport } from '@/components/reports/WeeklyReport';
 import { MonthlyReport } from '@/components/reports/MonthlyReport';
 import { YearlyReport } from '@/components/reports/YearlyReport';
+import { DailyReport } from '@/components/reports/DailyReport';
 
 const ReportsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("daily");
@@ -144,8 +145,7 @@ const ReportsPage: React.FC = () => {
               </div>
               
               <TabsContent value="daily" className="space-y-6">
-                {/* Daily report content - similar to weekly but with daily specific data */}
-                <WeeklyReport />
+                <DailyReport />
               </TabsContent>
               
               <TabsContent value="weekly">
