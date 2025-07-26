@@ -4,7 +4,7 @@ import { productData } from '@/data/products';
 import { supplierData } from '@/data/suppliers';
 
 // Define types for our collections
-type CollectionName = 'products' | 'customers' | 'suppliers' | 'shops' | 'users' | 'cart';
+type CollectionName = 'products' | 'customers' | 'suppliers' | 'shops' | 'users' | 'cart' | 'transfers';
 type CollectionData = Product[] | Customer[] | Supplier[] | Shop[] | User[] | any[];
 
 class LocalStorageDB {
@@ -97,6 +97,17 @@ class LocalStorageDB {
     return this.getCollection('cart');
   }
   
+  // Get transfer history
+  getTransfers(): any[] {
+    return this.getCollection('transfers');
+  }
+  
+  // Save a transfer record
+  saveTransfer(transfer: any): void {
+    const transfers = this.getTransfers();
+    this.saveCollection('transfers', [...transfers, transfer]);
+  }
+  
   // Clear the database (for testing)
   clearDb(): void {
     localStorage.removeItem(`${this.PREFIX}initialized`);
@@ -106,6 +117,7 @@ class LocalStorageDB {
     localStorage.removeItem(`${this.PREFIX}shops`);
     localStorage.removeItem(`${this.PREFIX}users`);
     localStorage.removeItem(`${this.PREFIX}cart`);
+    localStorage.removeItem(`${this.PREFIX}transfers`);
   }
 }
 

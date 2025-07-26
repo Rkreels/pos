@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Store } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { DashboardSelector } from '@/components/DashboardSelector';
+import { routePreloader } from '@/utils/preloader';
 
 const sampleSalesData: SalesData[] = [
   { date: 'Jan 1', sales: 4000, transactions: 24 },
@@ -43,6 +44,9 @@ const Index = () => {
   useEffect(() => {
     // Clear any previous speech and start new explanation after a slight delay
     voiceAssistant.stopSpeaking();
+    
+    // Preload routes based on user role for faster navigation
+    routePreloader.preloadRoutes(currentUser.role);
     
     // Speak page overview when the page loads
     const timer = setTimeout(() => {

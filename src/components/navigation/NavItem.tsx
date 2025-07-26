@@ -27,12 +27,15 @@ export const NavItem: React.FC<NavItemProps> = ({
   if (!isVisible) return null;
 
   const handleLinkClick = () => {
-    // Add a small delay to ensure the page transition happens first
+    // Stop any current speech and prepare for page transition
+    voiceAssistant.stopSpeaking();
+    
+    // Reduced delay for faster page transitions
     setTimeout(() => {
       if (speakFunction) {
         speakFunction();
       }
-    }, 800);
+    }, 300);
   };
 
   return (

@@ -7,8 +7,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import POSPage from "./pages/POSPage";
 import NotFound from "./pages/NotFound";
-import { lazy, Suspense } from "react";
-import { Loader2 } from "lucide-react";
+import { lazy } from "react";
+import { OptimizedLazyLoad } from "./components/OptimizedLazyLoad";
 import { ShopProvider } from "./context/ShopContext";
 import { AuthProvider } from "./context/AuthContext";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -21,11 +21,9 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const SuppliersPage = lazy(() => import('./pages/SuppliersPage'));
 const ShopsPage = lazy(() => import('./pages/ShopsPage'));
 
-// Loading fallback component for lazy-loaded routes
-const LoadingFallback = () => (
-  <div className="flex h-screen w-full items-center justify-center">
-    <Loader2 className="h-10 w-10 animate-spin text-primary" />
-  </div>
+// Optimized route wrapper
+const LazyRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <OptimizedLazyLoad>{children}</OptimizedLazyLoad>
 );
 
 // Create a new QueryClient instance
@@ -47,49 +45,49 @@ const App = () => {
                 <Route 
                   path="/inventory" 
                   element={
-                    <Suspense fallback={<LoadingFallback />}>
+                    <LazyRoute>
                       <InventoryPage />
-                    </Suspense>
+                    </LazyRoute>
                   } 
                 />
                 <Route 
                   path="/reports" 
                   element={
-                    <Suspense fallback={<LoadingFallback />}>
+                    <LazyRoute>
                       <ReportsPage />
-                    </Suspense>
+                    </LazyRoute>
                   } 
                 />
                 <Route 
                   path="/customers" 
                   element={
-                    <Suspense fallback={<LoadingFallback />}>
+                    <LazyRoute>
                       <CustomersPage />
-                    </Suspense>
+                    </LazyRoute>
                   } 
                 />
                 <Route 
                   path="/suppliers" 
                   element={
-                    <Suspense fallback={<LoadingFallback />}>
+                    <LazyRoute>
                       <SuppliersPage />
-                    </Suspense>
+                    </LazyRoute>
                   } 
                 />
                 <Route 
                   path="/settings" 
                   element={
-                    <Suspense fallback={<LoadingFallback />}>
+                    <LazyRoute>
                       <SettingsPage />
-                    </Suspense>
+                    </LazyRoute>
                   } 
                 />
                 <Route 
                   path="/shops" 
                   element={
-                    <Suspense fallback={<LoadingFallback />}>
+                    <LazyRoute>
                       <ShopsPage />
-                    </Suspense>
+                    </LazyRoute>
                   } 
                 />
                 <Route path="*" element={<NotFound />} />

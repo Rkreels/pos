@@ -145,6 +145,7 @@ class VoiceAssistant {
     this.speak("Welcome to the Inventory Exchange feature. This tool allows you to request products from other stores or send your excess inventory to locations that need it. This helps optimize stock levels across all your business locations and ensures product availability where it's needed most. All transfers are tracked and reflected in real-time inventory counts.");
   }
 
+
   speakCustomersPage() {
     this.speak("Welcome to Customer Management. Here you can access your customer database, view purchase histories, manage loyalty programs, and add new customers. Building strong relationships with your customers is key to growing your business. All customer data is dynamically updated as they make purchases and interact with your business.");
   }
@@ -226,33 +227,12 @@ class VoiceAssistant {
     this.speak(`You've switched to viewing permissions for the ${role} role. You can now customize what users with this role can access and modify in the system. These settings will apply to all users assigned this role across your organization.`);
   }
   
-  speakProductSearch() {
-    this.speak("You can search for products by name, SKU, or description. The results will update as you type, helping you quickly find the exact item you need. The search feature operates across your entire product database in real-time.");
-  }
-  
-  speakCategoryFilter() {
-    this.speak("You can filter products by category by selecting from the category tags. This helps narrow down your view when managing specific product types. Categories are dynamically generated based on your product database.");
-  }
-  
-  speakLowStockWarning(productName: string, quantity: number) {
-    this.speak(`Alert: ${productName} is running low with only ${quantity} units remaining in stock. Consider reordering soon to avoid stockouts. This alert is based on real-time inventory tracking across your locations.`);
-  }
-  
-  speakOutOfStock(productName: string) {
-    this.speak(`Warning: ${productName} is now out of stock. Customers will not be able to purchase this item until inventory is replenished. This status is reflected in real-time across all your point-of-sale systems.`);
-  }
-  
   speakTransactionProcessed(transactionId: string) {
     this.speak(`Transaction ${transactionId} has been successfully processed. The receipt has been generated and is ready for the customer. Your inventory, sales reports, and customer purchase history have all been updated in real-time.`);
   }
   
   speakDiscountApplied(discountName: string, amount: number, total: number) {
     this.speak(`${discountName} discount of ${amount.toFixed(2)} dollars has been applied. The new total is ${total.toFixed(2)} dollars. This discount will be tracked in your sales reports for promotional analysis.`);
-  }
-  
-  // New methods for explaining component details
-  speakInventoryTableDetails() {
-    this.speak("The inventory table displays all your products with their key details. You can see product names, SKUs, categories, pricing, costs, profit margins, and current stock levels. All data updates in real-time as stock changes occur across your locations. Use the actions buttons to edit products or adjust quantities.");
   }
   
   speakExchangeDialogDetails() {
@@ -289,9 +269,29 @@ class VoiceAssistant {
         this.speak(`This ${widgetName} widget provides important business metrics based on your actual transaction and inventory data. It's updated in real-time to give you the latest information for decision making.`);
     }
   }
-  
+
+  speakInventoryTableDetails() {
+    this.speak("The inventory table displays all your products with their key details. You can see product names, SKUs, categories, pricing, costs, profit margins, and current stock levels. All data updates in real-time as stock changes occur across your locations. Use the actions buttons to edit products or adjust quantities.");
+  }
+
   speakInventoryFilterDetails() {
     this.speak("These inventory filters allow you to quickly find specific products. You can search by name, filter by category, or sort by various attributes. The filters act on your entire product database in real-time, making it easy to find exactly what you're looking for.");
+  }
+
+  speakProductSearch() {
+    this.speak("You can search for products by name, SKU, or description. The results will update as you type, helping you quickly find the exact item you need. The search feature operates across your entire product database in real-time.");
+  }
+
+  speakCategoryFilter() {
+    this.speak("You can filter products by category by selecting from the category tags. This helps narrow down your view when managing specific product types. Categories are dynamically generated based on your product database.");
+  }
+
+  speakLowStockWarning(productName: string, quantity: number) {
+    this.speak(`Alert: ${productName} is running low with only ${quantity} units remaining in stock. Consider reordering soon to avoid stockouts. This alert is based on real-time inventory tracking across your locations.`);
+  }
+
+  speakOutOfStock(productName: string) {
+    this.speak(`Warning: ${productName} is now out of stock. Customers will not be able to purchase this item until inventory is replenished. This status is reflected in real-time across all your point-of-sale systems.`);
   }
 }
 

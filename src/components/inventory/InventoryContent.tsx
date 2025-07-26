@@ -3,6 +3,7 @@ import React from 'react';
 import { Product } from '@/types';
 import { InventoryExchange } from '@/components/InventoryExchange';
 import { Inventory } from '@/components/Inventory';
+import { TransferHistory } from '@/components/inventory/TransferHistory';
 import { NoShopSelected } from '@/components/inventory/NoShopSelected';
 import { ProductDialog } from '@/components/inventory/ProductDialog';
 import { supplierData } from '@/data/suppliers';
@@ -185,13 +186,20 @@ export const InventoryContent: React.FC<InventoryContentProps> = ({
         <>
           <InventoryExchange products={products} setProducts={setProducts} />
           
-          <Inventory 
-            products={products}
-            onUpdateStock={handleUpdateStock}
-            onAddProduct={handleAddProduct}
-            onEditProduct={handleEditProduct}
-            onDeleteProduct={handleDeleteProduct}
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div className="lg:col-span-2">
+              <Inventory 
+                products={products}
+                onUpdateStock={handleUpdateStock}
+                onAddProduct={handleAddProduct}
+                onEditProduct={handleEditProduct}
+                onDeleteProduct={handleDeleteProduct}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <TransferHistory />
+            </div>
+          </div>
         </>
       ) : (
         <NoShopSelected />

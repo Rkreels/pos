@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { ArrowRight, PackageCheck } from 'lucide-react';
 import { voiceAssistant } from '@/services/VoiceAssistant';
 import { ExchangeDialog } from './inventory/ExchangeDialog';
+import { db } from '@/services/LocalStorageDB';
 
 interface InventoryExchangeProps {
   products: Product[];
@@ -33,26 +34,56 @@ export const InventoryExchange: React.FC<InventoryExchangeProps> = ({ products, 
   };
   
   const handleExchange = (targetShop: string, selectedProducts: ProductExchange[], isRequest: boolean) => {
+    const targetShopName = shops.find(s => s.id === targetShop)?.name || "another shop";
+    const transferId = `transfer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    // Create transfer record
+    const transferRecord = {
+      id: transferId,
+      fromShop: isRequest ? targetShop : currentShop?.id,
+      toShop: isRequest ? currentShop?.id : targetShop,
+      fromShopName: isRequest ? targetShopName : currentShop?.name,
+      toShopName: isRequest ? currentShop?.name : targetShopName,
+      products: selectedProducts.map(sp => {
+        const product = products.find(p => p.id === sp.productId);
+        return {
+          ...sp,
+          productName: product?.name || 'Unknown Product',
+          productSku: product?.sku || ''
+        };
+      }),
+      type: isRequest ? 'request' : 'send',
+      status: isRequest ? 'pending' : 'completed',
+      requestedAt: new Date().toISOString(),
+      completedAt: isRequest ? null : new Date().toISOString(),
+      requestedBy: currentShop?.name || 'Unknown Shop'
+    };
+    
+    // Save transfer record
+    db.saveTransfer(transferRecord);
+    
     if (!isRequest) {
-      // Update current shop's inventory
+      // Update current shop's inventory for outgoing transfers
       const updatedProducts = products.map(p => {
         const exchangeItem = selectedProducts.find(item => item.productId === p.id);
         if (exchangeItem) {
-          return { ...p, stockQuantity: p.stockQuantity - exchangeItem.quantity };
+          return { ...p, stockQuantity: Math.max(0, p.stockQuantity - exchangeItem.quantity) };
         }
         return p;
       });
       
       setProducts(updatedProducts);
       
-      const targetShopName = shops.find(s => s.id === targetShop)?.name || "another shop";
       const productCount = selectedProducts.length;
-      toast.success(`Sent ${productCount} product${productCount > 1 ? 's' : ''} to ${targetShopName}`);
+      toast.success(`Sent ${productCount} product${productCount > 1 ? 's' : ''} to ${targetShopName}`, {
+        description: `Transfer ID: ${transferId}`
+      });
     } else {
       // Requesting inventory
-      const sourceShopName = shops.find(s => s.id === targetShop)?.name || "another shop";
       const productCount = selectedProducts.length;
-      toast.success(`Requested ${productCount} product${productCount > 1 ? 's' : ''} from ${sourceShopName}`);
+      toast.success(`Requested ${productCount} product${productCount > 1 ? 's' : ''} from ${targetShopName}`, {
+        description: `Request ID: ${transferId}`
+      });
     }
     
     setIsDialogOpen(false);
