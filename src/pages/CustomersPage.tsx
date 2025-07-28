@@ -190,17 +190,17 @@ const CustomersPage: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <MainNavigation />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white shadow-sm py-4 px-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-800">
+        <header className="bg-card shadow-sm py-4 px-4 md:px-6">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 justify-between items-start sm:items-center">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">
               {customerDetailView && selectedCustomer ? `Customer: ${selectedCustomer.name}` : 'Customer Management'}
             </h1>
             {!customerDetailView && (
-              <Button onClick={handleAddCustomer}>
+              <Button onClick={handleAddCustomer} className="w-full sm:w-auto">
                 <UserPlus className="h-4 w-4 mr-2" /> Add Customer
               </Button>
             )}
@@ -216,7 +216,7 @@ const CustomersPage: React.FC = () => {
             />
           ) : (
             <div className="space-y-6">
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="flex-1">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
@@ -250,9 +250,9 @@ const CustomersPage: React.FC = () => {
                 </Card>
               </div>
               
-              <div className="flex justify-between items-center">
-                <div className="relative w-64">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                <div className="relative w-full sm:w-64">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
                     type="text"
                     placeholder="Search customers..."
@@ -264,17 +264,18 @@ const CustomersPage: React.FC = () => {
               </div>
               
               <div className="border rounded-md overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead>Address</TableHead>
-                      <TableHead className="text-right">Loyalty Points</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="min-w-[120px]">Name</TableHead>
+                        <TableHead className="hidden sm:table-cell min-w-[200px]">Email</TableHead>
+                        <TableHead className="hidden md:table-cell">Phone</TableHead>
+                        <TableHead className="hidden lg:table-cell">Address</TableHead>
+                        <TableHead className="text-right">Loyalty Points</TableHead>
+                        <TableHead className="text-right min-w-[200px]">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
                   <TableBody>
                     {filteredCustomers.length === 0 ? (
                       <TableRow>
@@ -286,12 +287,12 @@ const CustomersPage: React.FC = () => {
                       filteredCustomers.map((customer) => (
                         <TableRow key={customer.id}>
                           <TableCell className="font-medium">{customer.name}</TableCell>
-                          <TableCell>{customer.email}</TableCell>
-                          <TableCell>{customer.phone || 'N/A'}</TableCell>
-                          <TableCell className="max-w-xs truncate">{customer.address || 'N/A'}</TableCell>
+                          <TableCell className="hidden sm:table-cell">{customer.email}</TableCell>
+                          <TableCell className="hidden md:table-cell">{customer.phone || 'N/A'}</TableCell>
+                          <TableCell className="hidden lg:table-cell max-w-xs truncate">{customer.address || 'N/A'}</TableCell>
                           <TableCell className="text-right">{customer.loyaltyPoints || 0}</TableCell>
                           <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
+                            <div className="flex justify-end gap-1 flex-wrap">
                               <Button 
                                 variant="outline" 
                                 size="icon"
@@ -340,7 +341,8 @@ const CustomersPage: React.FC = () => {
                       ))
                     )}
                   </TableBody>
-                </Table>
+                  </Table>
+                </div>
               </div>
             </div>
           )}

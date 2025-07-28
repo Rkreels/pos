@@ -39,13 +39,13 @@ const POSPage: React.FC = () => {
   }, [currentShop?.id]);
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-background">
       <MainNavigation isCollapsed={sidebarCollapsed} toggleCollapsed={() => setSidebarCollapsed(!sidebarCollapsed)} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-white shadow-sm py-4 px-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-gray-800">Point of Sale</h1>
+        <header className="bg-card shadow-sm py-4 px-4 md:px-6">
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-0 justify-between items-start sm:items-center">
+            <h1 className="text-xl md:text-2xl font-bold text-foreground">Point of Sale</h1>
             {currentShop && (
               <Card className="border-0 shadow-none bg-transparent">
                 <CardContent className="p-0 flex items-center">

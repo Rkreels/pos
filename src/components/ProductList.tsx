@@ -55,9 +55,9 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col md:flex-row gap-2 md:items-center justify-between">
-        <div className="relative w-full md:w-72">
-          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+      <div className="flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
+        <div className="relative w-full lg:w-72">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search products..."
@@ -67,12 +67,12 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
             aria-label="Search products"
           />
         </div>
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-2">
           {categories.map(category => (
             <Badge 
               key={category} 
               variant={categoryFilter === category ? "default" : "outline"}
-              className="cursor-pointer"
+              className="cursor-pointer hover:bg-primary/80 transition-colors"
               onClick={() => setCategoryFilter(categoryFilter === category ? null : category)}
             >
               <Tag className="h-3.5 w-3.5 mr-1" />
@@ -87,7 +87,7 @@ export const ProductList: React.FC<ProductListProps> = ({ products, onAddToCart 
           No products found matching your search
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
           {filteredProducts.map((product) => (
             <Card key={product.id} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-2">

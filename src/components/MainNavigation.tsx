@@ -30,13 +30,26 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
   isCollapsed = false, 
   toggleCollapsed 
 }) => {
-  const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(!isCollapsed);
+  const [isSidebarExpanded, setIsSidebarExpanded] = React.useState(
+    typeof window !== 'undefined' && window.innerWidth >= 768 ? !isCollapsed : false
+  );
   const { currentShop } = useShop();
   const { checkRouteAccess } = useAuth();
   
   React.useEffect(() => {
     setIsSidebarExpanded(!isCollapsed);
   }, [isCollapsed]);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarExpanded(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleSidebar = () => {
     setIsSidebarExpanded(!isSidebarExpanded);
@@ -47,8 +60,10 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
 
   return (
     <div className={cn(
-      "h-screen bg-sidebar-background text-sidebar-foreground border-r border-gray-200 transition-all duration-300 flex flex-col",
-      isSidebarExpanded ? "w-60" : "w-16"
+      "h-screen bg-sidebar-background text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 flex flex-col relative z-50",
+      isSidebarExpanded ? "w-60" : "w-16",
+      // Mobile overlay behavior
+      window.innerWidth < 768 && isSidebarExpanded && "fixed inset-y-0 left-0 shadow-lg"
     )}>
       <div className="p-4 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-4">
