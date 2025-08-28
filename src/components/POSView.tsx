@@ -4,6 +4,7 @@ import { Product, CartItem } from '@/types';
 import { ProductList } from '@/components/ProductList';
 import { Cart } from '@/components/Cart';
 import { voiceAssistant } from '@/services/VoiceAssistant';
+import { progressTracker } from '@/services/ProgressTracker';
 import { toast } from 'sonner';
 import { ReceiptHistory } from '@/components/ReceiptHistory';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -26,12 +27,15 @@ export const POSView: React.FC<POSViewProps> = ({ products, setProducts }) => {
   };
 
   const handleAddToCart = (product: Product) => {
+    const sessionId = progressTracker.startAction('pos', 'pos_add_product');
+    
     // First stop any current speech
     voiceAssistant.stopSpeaking();
     
     // Check if product is in stock
     if (product.stockQuantity !== undefined && product.stockQuantity <= 0) {
       toast.error(`${product.name} is out of stock`);
+      progressTracker.completeAction(sessionId, false, { reason: 'out_of_stock', productId: product.id });
       return;
     }
     
@@ -63,6 +67,12 @@ export const POSView: React.FC<POSViewProps> = ({ products, setProducts }) => {
         // Speak product added confirmation
         voiceAssistant.speakProductAdded(product.name, total);
         toast.success(`Added ${product.name} to cart`);
+        progressTracker.completeAction(sessionId, true, { 
+          productId: product.id, 
+          productName: product.name, 
+          newTotal: total,
+          cartSize: newItems.length 
+        });
       }, 0);
       
       return newItems;
@@ -123,6 +133,8 @@ export const POSView: React.FC<POSViewProps> = ({ products, setProducts }) => {
   };
 
   const handleRemoveItem = (productId: string) => {
+    progressTracker.trackQuickAction('pos', 'pos_remove_product', true, { productId });
+    
     // First stop any current speech
     voiceAssistant.stopSpeaking();
     
@@ -160,6 +172,8 @@ export const POSView: React.FC<POSViewProps> = ({ products, setProducts }) => {
   };
 
   const handleCheckout = () => {
+    const sessionId = progressTracker.startAction('pos', 'pos_checkout');
+    
     // First stop any current speech
     voiceAssistant.stopSpeaking();
     
@@ -169,6 +183,12 @@ export const POSView: React.FC<POSViewProps> = ({ products, setProducts }) => {
     // Speak checkout confirmation
     voiceAssistant.speakCheckout(totalItems, total);
     toast.success(`Order completed for ${totalItems} items with total $${total.toFixed(2)}`);
+    
+    progressTracker.completeAction(sessionId, true, {
+      totalItems,
+      totalAmount: total,
+      itemCount: cartItems.length
+    });
     
     // Clear cart after checkout
     setCartItems([]);

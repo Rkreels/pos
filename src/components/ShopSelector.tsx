@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/command';
 import { Check, ChevronsUpDown, Store } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { progressTracker } from '@/services/ProgressTracker';
 
 export const ShopSelector = () => {
   const { shops, currentShop, setCurrentShop } = useShop();
@@ -48,6 +49,11 @@ export const ShopSelector = () => {
                     key={shop.id}
                     value={shop.name}
                     onSelect={() => {
+                      progressTracker.trackQuickAction('shops', 'shop_switch', true, { 
+                        fromShop: currentShop?.id, 
+                        toShop: shop.id,
+                        shopName: shop.name 
+                      });
                       setCurrentShop(shop);
                       setOpen(false);
                     }}

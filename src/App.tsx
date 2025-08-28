@@ -12,6 +12,7 @@ import { OptimizedLazyLoad } from "./components/OptimizedLazyLoad";
 import { ShopProvider } from "./context/ShopContext";
 import { AuthProvider } from "./context/AuthContext";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { VoiceToggle } from "./components/VoiceToggle";
 
 // Lazy loaded components for better performance
 const InventoryPage = lazy(() => import('./pages/InventoryPage'));
@@ -92,6 +93,7 @@ const App = () => {
                 />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <VoiceToggle />
               </TooltipProvider>
             </ShopProvider>
           </AuthProvider>

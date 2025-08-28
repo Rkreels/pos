@@ -2,7 +2,7 @@
 // This class provides voice guidance for the POS system
 class VoiceAssistant {
   private speech: SpeechSynthesisUtterance | null = null;
-  private isMuted: boolean = false;
+  private isMuted: boolean = true; // Default to muted
   private voiceName: string = ""; // Store the selected voice name
   private availableVoices: SpeechSynthesisVoice[] = [];
   

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Product, Supplier } from '@/types';
 import { DialogFooter } from '@/components/ui/dialog';
+import { progressTracker } from '@/services/ProgressTracker';
 
 interface ProductFormProps {
   newProduct: Partial<Product>;
@@ -210,7 +211,21 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
           Cancel
         </Button>
-        <Button type="button" onClick={handleSaveProduct}>
+        <Button type="button" onClick={() => {
+          const action = editingProduct ? 'inventory_update_product' : 'inventory_add_product';
+          const sessionId = progressTracker.startAction('inventory', action);
+          
+          try {
+            handleSaveProduct();
+            progressTracker.completeAction(sessionId, true, {
+              productId: editingProduct?.id || 'new',
+              productName: newProduct.name,
+              action: editingProduct ? 'update' : 'create'
+            });
+          } catch (error) {
+            progressTracker.completeAction(sessionId, false, { error: error.toString() });
+          }
+        }}>
           {editingProduct ? 'Update' : 'Add'}
         </Button>
       </DialogFooter>
