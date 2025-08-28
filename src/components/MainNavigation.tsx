@@ -10,7 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Truck,
-  Building
+  Building,
+  ExternalLink
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -153,6 +154,14 @@ export const MainNavigation: React.FC<MainNavigationProps> = ({
             speakFunction={() => voiceAssistant.speakSettingsPage()}
             isVisible={checkRouteAccess('/settings')}
           />
+          <a 
+            href="https://skillsim.vercel.app/dashboard"
+            target="_self"
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all hover:bg-sidebar-accent"
+          >
+            <ExternalLink className="h-4 w-4" />
+            {isSidebarExpanded && <span>Master Dashboard</span>}
+          </a>
         </div>
       </div>
       <SidebarProfile isSidebarExpanded={isSidebarExpanded} />
